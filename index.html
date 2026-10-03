@@ -737,7 +737,7 @@ async function runH2H(type){
   const query=prompts[type]||prompts.full;
   if(aiReady){
     try{
-      const r=await FMFO.streamAnalysis({query:`${sp.name} expert analysis.\n\n${query}\n\nEnd with:\n📌 COMMENTATOR TALKING POINT`},sport:S.sport,mode:'Pre-Game Intel'},(text)=>{S.h2h.result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`}});
+      const r=await FMFO.streamAnalysis({query:`${sp.name} expert analysis.\n\n${query}\n\nEnd with:\n📌 COMMENTATOR TALKING POINT`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{S.h2h.result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
       S.h2h.result=r.text;
     }catch(e){S.h2h.result=`Analysis error: ${e.message||'try again'}`;}
   }else{
@@ -801,7 +801,7 @@ async function gameAnalysis(type){
   let result='';
   if(aiReady){
     try{
-      const r=await FMFO.streamAnalysis({query:`${sp.name} analysis.\n\n${query}\n\nEnd with: 📌 COMMENTATOR TALKING POINT`},sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`}});
+      const r=await FMFO.streamAnalysis({query:`${sp.name} analysis.\n\n${query}\n\nEnd with: 📌 COMMENTATOR TALKING POINT`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
       result=r.text;
     }catch(e){result=`Error: ${e.message||'try again'}`;}
   }else{result=`⚠️ AI offline.\n${context}\n— FMFO Sports`;}
@@ -886,7 +886,7 @@ async function runPlayerAnalysis(name,type){
   let result='';
   if(aiReady){
     try{
-      const r=await FMFO.streamAnalysis({query:`${sp.name} player analysis.\n\n${prompts[type]||prompts.full}\n\nEnd with: 📌 COMMENTATOR TALKING POINT about this player.`},sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`}});
+      const r=await FMFO.streamAnalysis({query:`${sp.name} player analysis.\n\n${prompts[type]||prompts.full}\n\nEnd with: 📌 COMMENTATOR TALKING POINT about this player.`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
       result=r.text;
     }catch(e){result=`Error: ${e.message||'try again'}`;}
   }else{result=`🎯 ${name} — ${sp.name}\n\n⚠️ AI offline.\n— FMFO Sports`;}
@@ -959,7 +959,7 @@ async function runParlayAnalysis(type){
   let result='';
   if(aiReady){
     try{
-      const r=await FMFO.streamAnalysis(`FMFO Sports AI Analyst — Parlay Analysis. Entertainment only, not gambling advice.\n\n${prompts[type]||prompts.full}\n\n📌 COMMENTATOR TALKING POINT`},sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`}});
+      const r=await FMFO.streamAnalysis({query:`FMFO Sports AI Analyst — Parlay Analysis. Entertainment only, not gambling advice.\n\n${prompts[type]||prompts.full}\n\n📌 COMMENTATOR TALKING POINT`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
       result=r.text;
     }catch(e){result=`Error: ${e.message}`;}
   }else{result=`🎰 Parlay: ${S.parlay.length} legs\n⚠️ AI offline.\n— FMFO Sports`;}
@@ -1014,7 +1014,7 @@ async function generateTrending(){
   const sportsList=SP.map(s=>`${s.icon} ${s.name}`).join(', ');
   if(aiReady){
     try{
-      const r=await FMFO.streamAnalysis({query:`Trending topics engine. Generate today's TOP 10 hottest storylines across all major sports (${sportsList}). For each:\n\n1. A punchy headline\n2. One-sentence context\n3. Hot take angle for commentators\n\nRank by how much buzz they'd generate. Be bold, be current (${new Date().toLocaleDateString()}), and give commentators something to work with.\n\nEnd with: 🔥 HOTTEST TAKE OF THE DAY — your single most provocative but defensible sports opinion right now.`},sport:S.sport,mode:'Pre-Game Intel'},(text)=>{S.trendCache=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`}});
+      const r=await FMFO.streamAnalysis({query:`Trending topics engine. Generate today's TOP 10 hottest storylines across all major sports (${sportsList}). For each:\n\n1. A punchy headline\n2. One-sentence context\n3. Hot take angle for commentators\n\nRank by how much buzz they'd generate. Be bold, be current (${new Date().toLocaleDateString()}), and give commentators something to work with.\n\nEnd with: 🔥 HOTTEST TAKE OF THE DAY — your single most provocative but defensible sports opinion right now.`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{S.trendCache=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
       S.trendCache=r.text;
     }catch(e){S.trendCache=`Error: ${e.message}`;}
   }else{S.trendCache='⚠️ AI offline.\n— FMFO Sports';}
@@ -1034,7 +1034,7 @@ async function generateHotTake(){
   if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Cooking up a take…</div>`;
   if(aiReady){
     try{
-      const r=await FMFO.streamAnalysis({query:`Hot take generator. Give me a bold, provocative but defensible hot take about: ${topic}\n\nFormat:\n🔥 THE TAKE: [one bold sentence]\n\nWHY IT'S RIGHT: [2-3 supporting points]\nWHY IT'S WRONG: [the strongest counterargument]\nCONFIDENCE: [%]\n\n📌 COMMENTATOR USE: How to bring this up on air without getting fired.`},sport:S.sport,mode:'Pre-Game Intel'},(text)=>{if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`}});
+      const r=await FMFO.streamAnalysis({query:`Hot take generator. Give me a bold, provocative but defensible hot take about: ${topic}\n\nFormat:\n🔥 THE TAKE: [one bold sentence]\n\nWHY IT'S RIGHT: [2-3 supporting points]\nWHY IT'S WRONG: [the strongest counterargument]\nCONFIDENCE: [%]\n\n📌 COMMENTATOR USE: How to bring this up on air without getting fired.`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
       S.output=r.text;
       if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(r.text)}</div>
         <div style="display:flex;gap:6px;margin-top:8px">
@@ -1086,7 +1086,7 @@ async function generatePrep(){
   if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Building prep sheet…</div>`;
   if(aiReady){
     try{
-      const r=await FMFO.streamAnalysis(`FMFO Sports AI — Commentator Prep Sheet Generator.\n\nGenerate a complete broadcast prep sheet for: ${matchup} (${sp.name})\n\nInclude these sections:\n\n📊 KEY STATS TO HAVE READY\n(5-7 stats a commentator should have at their fingertips)\n\n📖 STORYLINES\n(3-4 narrative angles to weave into commentary)\n\n🔑 MATCHUPS TO WATCH\n(2-3 specific player/unit matchups that will decide the game)\n\n🎤 TALKING POINTS\n(5 ready-to-use on-air observations — complete sentences a commentator can say verbatim)\n\n⚠️ WATCH FOR\n(2-3 in-game situations to call out if they happen)\n\n🔮 BOLD PREDICTION\n(one specific, brave prediction with reasoning)\n\nFormat each section clearly. This is a working document a commentator prints and brings to the booth.`},sport:S.sport,mode:'Pre-Game Intel'},(text)=>{if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`}});
+      const r=await FMFO.streamAnalysis({query:`FMFO Sports AI — Commentator Prep Sheet Generator.\n\nGenerate a complete broadcast prep sheet for: ${matchup} (${sp.name})\n\nInclude these sections:\n\n📊 KEY STATS TO HAVE READY\n(5-7 stats a commentator should have at their fingertips)\n\n📖 STORYLINES\n(3-4 narrative angles to weave into commentary)\n\n🔑 MATCHUPS TO WATCH\n(2-3 specific player/unit matchups that will decide the game)\n\n🎤 TALKING POINTS\n(5 ready-to-use on-air observations — complete sentences a commentator can say verbatim)\n\n⚠️ WATCH FOR\n(2-3 in-game situations to call out if they happen)\n\n🔮 BOLD PREDICTION\n(one specific, brave prediction with reasoning)\n\nFormat each section clearly. This is a working document a commentator prints and brings to the booth.`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
       S.output=r.text;
       if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(r.text)}</div>
         <div style="display:flex;gap:6px;margin-top:8px">
