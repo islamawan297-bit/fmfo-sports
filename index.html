@@ -1,1782 +1,713 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FMFO Sports — Commentator Analytics Control Room</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --bg-0: #020617;
-      --bg-1: #090e1a;
-      --bg-2: #0f172a;
-      --bg-3: #1e293b;
-      --bg-4: #334155;
-      --accent: #06b6d4;
-      --accent-dim: #0891b2;
-      --accent-glow: rgba(6, 182, 212, 0.35);
-      --accent-bg: rgba(6, 182, 212, 0.1);
-      --accent-bg2: rgba(6, 182, 212, 0.18);
-      --emerald: #10b981;
-      --emerald-bg: rgba(16, 185, 129, 0.12);
-      --text-1: #f8fafc;
-      --text-2: #94a3b8;
-      --text-3: #64748b;
-      --border-1: rgba(30, 41, 59, 0.8);
-      --border-2: rgba(51, 65, 85, 0.8);
-      --border-cyan: rgba(6, 182, 212, 0.3);
-      --red: #f43f5e;
-      --orange: #f97316;
-      --blue: #3b82f6;
-      --purple: #a855f7;
-      --gold: #eab308;
-      --r: 12px;
-      --r-lg: 16px;
-      --r-full: 9999px;
-      --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
-      --shadow-glow: 0 0 16px rgba(6, 182, 212, 0.25);
-    }
-
-    @media(prefers-color-scheme:light) {
-      :root:not([data-theme="dark"]) {
-        --bg-0: #f8fafc;
-        --bg-1: #ffffff;
-        --bg-2: #f1f5f9;
-        --bg-3: #ffffff;
-        --bg-4: #e2e8f0;
-        --text-1: #0f172a;
-        --text-2: #475569;
-        --text-3: #94a3b8;
-        --border-1: #cbd5e1;
-        --border-2: #94a3b8
-      }
-    }
-
-    :root[data-theme="dark"] {
-      --bg-0: #020617;
-      --bg-1: #090e1a;
-      --bg-2: #0f172a;
-      --bg-3: #1e293b;
-      --bg-4: #334155;
-      --text-1: #f8fafc;
-      --text-2: #94a3b8;
-      --text-3: #64748b;
-      --border-1: rgba(30, 41, 59, 0.8);
-      --border-2: rgba(51, 65, 85, 0.8)
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg-0);
-      color: var(--text-1);
-      min-height: 100vh;
-      line-height: 1.55;
-      background-image: radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 60%);
-    }
-
-    .hdr {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 24px;
-      border-bottom: 1px solid var(--border-1);
-      background: rgba(9, 14, 26, 0.85);
-      backdrop-filter: blur(16px);
-      position: sticky;
-      top: 0;
-      z-index: 100
-    }
-
-    .hdr-left {
-      display: flex;
-      align-items: center;
-      gap: 12px
-    }
-
-    .logo {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #06b6d4, #10b981);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font: 800 14px/1 'Space Grotesk', sans-serif;
-      color: #020617;
-      letter-spacing: -.5px;
-      box-shadow: 0 0 14px rgba(6, 182, 212, 0.4);
-    }
-
-    .brand {
-      display: flex;
-      flex-direction: column
-    }
-
-    .brand-name {
-      font: 800 18px/1.1 'Space Grotesk', sans-serif;
-      letter-spacing: -.5px;
-      color: #f8fafc;
-    }
-
-    .brand-sub {
-      font-size: 10px;
-      color: var(--accent);
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase
-    }
-
-    .hdr-tag {
-      font-size: 11px;
-      color: var(--text-3);
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .hdr-tag::before {
-      content: '';
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--emerald);
-      box-shadow: 0 0 8px var(--emerald);
-    }
-
-    .mob-tog {
-      display: none;
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
-      border: 1px solid var(--border-1);
-      background: var(--bg-2);
-      color: var(--text-2);
-      cursor: pointer;
-      font-size: 16px;
-      align-items: center;
-      justify-content: center
-    }
-
-    .shell {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      min-height: calc(100vh - 61px)
-    }
-
-    @media(max-width:800px) {
-      .shell {
-        grid-template-columns: 1fr
-      }
-
-      .side {
-        display: none
-      }
-
-      .side.open {
-        display: flex;
-        position: fixed;
-        inset: 61px 0 0 0;
-        z-index: 90
-      }
-
-      .mob-tog {
-        display: flex !important
-      }
-    }
-
-    .side {
-      background: var(--bg-1);
-      border-right: 1px solid var(--border-1);
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      overflow-y: auto
-    }
-
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: var(--r);
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--text-2);
-      font: 500 12px/1 'Inter', sans-serif;
-      cursor: pointer;
-      width: 100%;
-      text-align: left;
-      transition: all 0.15s ease
-    }
-
-    .nav-btn:hover {
-      background: rgba(30, 41, 59, 0.6);
-      color: var(--text-1);
-      border-color: rgba(51, 65, 85, 0.4)
-    }
-
-    .nav-btn.on {
-      background: var(--accent-bg2);
-      color: var(--accent);
-      border-color: var(--border-cyan);
-      font-weight: 600;
-      box-shadow: var(--shadow-glow)
-    }
-
-    .ni {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      flex-shrink: 0;
-      background: rgba(30, 41, 59, 0.6)
-    }
-
-    .sep {
-      height: 1px;
-      background: var(--border-1);
-      margin: 8px 0
-    }
-
-    .stl {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1.8px;
-      color: var(--text-3);
-      font-weight: 800;
-      padding: 12px 10px 4px
-    }
-
-    .pw {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px;
-      border-radius: var(--r);
-      background: var(--accent-bg);
-      border: 1px solid var(--border-cyan);
-      color: var(--accent);
-      font-size: 11px;
-      font-weight: 600;
-      text-decoration: none;
-      margin-top: auto;
-      transition: all 0.15s ease
-    }
-
-    .pw:hover {
-      background: var(--accent-bg2);
-      box-shadow: var(--shadow-glow)
-    }
-
-    .main {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      overflow-y: auto
-    }
-
-    .card {
-      background: var(--bg-2);
-      border: 1px solid var(--border-1);
-      border-radius: var(--r-lg);
-      padding: 20px;
-      box-shadow: var(--shadow-card);
-      transition: all 0.2s ease
-    }
-
-    .card:hover {
-      border-color: var(--border-2)
-    }
-
-    .ch {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 8px
-    }
-
-    .ct {
-      font: 700 16px/1.2 'Space Grotesk', sans-serif;
-      letter-spacing: -0.3px;
-      color: var(--text-1);
-    }
-
-    .g2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px
-    }
-
-    .g3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px
-    }
-
-    .g4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px
-    }
-
-    @media(max-width:960px) {
-
-      .g2,
-      .g3 {
-        grid-template-columns: 1fr
-      }
-
-      .g4 {
-        grid-template-columns: 1fr 1fr
-      }
-    }
-
-    .sc {
-      background: var(--bg-2);
-      border-radius: var(--r-lg);
-      padding: 16px;
-      border: 1px solid var(--border-1);
-      box-shadow: var(--shadow-card);
-      transition: all 0.2s ease;
-    }
-
-    .sc:hover {
-      border-color: var(--border-cyan);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-glow);
-    }
-
-    .sl {
-      font-size: 10px;
-      color: var(--text-3);
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 4px
-    }
-
-    .sv {
-      font: 800 26px/1 'Space Grotesk', sans-serif;
-      color: var(--text-1);
-    }
-
-    .ss {
-      font-size: 11px;
-      margin-top: 4px;
-      font-weight: 600
-    }
-
-    .tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--bg-1);
-      border-radius: var(--r-full);
-      padding: 4px;
-      border: 1px solid var(--border-1);
-      width: fit-content;
-      flex-wrap: wrap
-    }
-
-    .tab {
-      padding: 7px 16px;
-      border-radius: var(--r-full);
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--text-2);
-      font: 600 11px/1 'Inter', sans-serif;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      white-space: nowrap
-    }
-
-    .tab:hover {
-      color: var(--text-1);
-      background: rgba(30, 41, 59, 0.5)
-    }
-
-    .tab.on {
-      background: var(--accent);
-      color: #020617;
-      font-weight: 700;
-      box-shadow: var(--shadow-glow);
-      border-color: var(--accent)
-    }
-
-    .tab.pred-on {
-      background: rgba(168, 85, 247, .2);
-      color: var(--purple) !important;
-      border-color: rgba(168, 85, 247, 0.4)
-    }
-
-    .ir {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px
-    }
-
-    .inp {
-      flex: 1;
-      padding: 10px 14px;
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      background: var(--bg-3);
-      color: var(--text-1);
-      font: 13px/1 'Inter', sans-serif;
-      outline: none;
-      transition: all 0.15s ease
-    }
-
-    .inp:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 12px rgba(6, 182, 212, 0.2)
-    }
-
-    .inp::placeholder {
-      color: var(--text-3)
-    }
-
-    .btn {
-      padding: 9px 16px;
-      border-radius: var(--r);
-      border: 1px solid transparent;
-      font: 600 12px/1 'Inter', sans-serif;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap
-    }
-
-    .bp {
-      background: linear-gradient(135deg, #06b6d4, #0891b2);
-      color: #020617;
-      font-weight: 700;
-      border: none;
-      box-shadow: 0 0 14px rgba(6, 182, 212, 0.3)
-    }
-
-    .bp:hover {
-      background: linear-gradient(135deg, #22d3ee, #06b6d4);
-      box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
-      transform: translateY(-1px)
-    }
-
-    .bp:disabled {
-      opacity: .4;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none
-    }
-
-    .bs {
-      background: var(--bg-3);
-      color: var(--text-2);
-      border: 1px solid var(--border-1)
-    }
-
-    .bs:hover {
-      color: var(--text-1);
-      border-color: var(--border-2);
-      background: var(--bg-4)
-    }
-
-    .bd {
-      background: transparent;
-      color: var(--red);
-      border: 1px solid rgba(244, 63, 94, 0.3)
-    }
-
-    .bd:hover {
-      background: rgba(244, 63, 94, .1)
-    }
-
-    .bsm {
-      padding: 5px 10px;
-      font-size: 11px
-    }
-
-    .qr {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 10px
-    }
-
-    .qp {
-      padding: 5px 12px;
-      border-radius: var(--r-full);
-      border: 1px solid var(--border-1);
-      background: var(--bg-3);
-      color: var(--text-2);
-      font: 600 11px/1 'Inter', sans-serif;
-      cursor: pointer;
-      transition: all 0.15s ease
-    }
-
-    .qp:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-bg);
-      transform: translateY(-1px)
-    }
-
-    .out {
-      min-height: 120px;
-      padding: 16px;
-      background: var(--bg-3);
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      white-space: pre-wrap;
-      font-size: 13px;
-      line-height: 1.75;
-      word-break: break-word
-    }
-
-    .out.empty {
-      color: var(--text-3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-size: 12px
-    }
-
-    .thk {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 16px
-    }
-
-    .dots span {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: dp 1.2s infinite
-    }
-
-    .dots span:nth-child(2) {
-      animation-delay: .2s
-    }
-
-    .dots span:nth-child(3) {
-      animation-delay: .4s
-    }
-
-    @keyframes dp {
-
-      0%,
-      80%,
-      100% {
-        opacity: .25;
-        transform: scale(.8)
-      }
-
-      40% {
-        opacity: 1;
-        transform: scale(1)
-      }
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%
-    }
-
-    .dg {
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent)
-    }
-
-    .dr {
-      background: var(--red)
-    }
-
-    .dy {
-      background: var(--orange)
-    }
-
-    .pb {
-      padding: 10px 14px;
-      border-radius: var(--r);
-      background: rgba(168, 85, 247, .1);
-      border: 1px solid rgba(168, 85, 247, .25);
-      font-size: 11px;
-      color: var(--purple);
-      margin-bottom: 10px;
-      font-weight: 500
-    }
-
-    .fi {
-      padding: 12px;
-      background: var(--bg-3);
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      cursor: pointer;
-      transition: all 0.15s ease
-    }
-
-    .fi:hover {
-      border-color: var(--border-cyan);
-      background: rgba(30, 41, 59, 0.8);
-      transform: translateX(2px)
-    }
-
-    .hb {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
-      background: rgba(6, 182, 212, 0.1);
-      border: 1px solid var(--border-cyan)
-    }
-
-    .hq {
-      font: 600 13px/1.3 'Inter', sans-serif;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis
-    }
-
-    .hm {
-      font-size: 10px;
-      color: var(--text-3);
-      margin-top: 3px
-    }
-
-    .pr {
-      display: flex;
-      gap: 8px;
-      padding: 10px 12px;
-      background: var(--bg-3);
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      align-items: center;
-      flex-wrap: wrap
-    }
-
-    .pp {
-      font: 600 13px/1.3 'Inter', sans-serif;
-      flex: 1;
-      min-width: 0
-    }
-
-    .pt {
-      font: 700 10px/1 'Inter', sans-serif;
-      padding: 3px 8px;
-      border-radius: 10px;
-      letter-spacing: .4px
-    }
-
-    .pw2 {
-      background: rgba(6, 182, 212, 0.15);
-      color: var(--accent);
-      border: 1px solid var(--border-cyan)
-    }
-
-    .pl {
-      background: rgba(244, 63, 94, 0.15);
-      color: var(--red);
-      border: 1px solid rgba(244, 63, 94, 0.3)
-    }
-
-    .ppn {
-      background: rgba(148, 163, 184, .15);
-      color: var(--text-2)
-    }
-
-    .cp {
-      background: var(--bg-3);
-      border: 1px solid var(--border-1);
-      border-radius: var(--r);
-      padding: 14px;
-      white-space: pre-wrap;
-      font-size: 12px;
-      line-height: 1.6;
-      max-height: 200px;
-      overflow-y: auto
-    }
-
-    .es {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 36px 16px;
-      color: var(--text-3);
-      text-align: center;
-      gap: 8px
-    }
-
-    .es .big {
-      font-size: 32px
-    }
-
-    .lb-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: var(--bg-3);
-      border-radius: var(--r);
-      border: 1px solid var(--border-1)
-    }
-
-    .lb-rank {
-      font: 800 18px/1 'Space Grotesk', sans-serif;
-      width: 32px;
-      text-align: center;
-      color: var(--accent)
-    }
-
-    .lb-name {
-      font: 600 13px/1 'Inter', sans-serif;
-      flex: 1
-    }
-
-    .lb-stat {
-      font: 700 14px/1 'Space Grotesk', sans-serif
-    }
-
-    .wl-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: var(--bg-3);
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      justify-content: space-between
-    }
-
-    .team-card {
-      background: var(--bg-3);
-      border: 1px solid var(--border-1);
-      border-radius: var(--r);
-      padding: 14px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      text-align: center
-    }
-
-    .team-card:hover {
-      border-color: var(--accent);
-      background: var(--bg-4);
-      transform: translateY(-2px)
-    }
-
-    .team-card.active {
-      border-color: var(--accent);
-      box-shadow: var(--shadow-glow);
-      background: var(--accent-bg)
-    }
-
-    .score-row {
-      display: flex;
-      align-items: center;
-      padding: 10px 14px;
-      background: var(--bg-3);
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      gap: 8px;
-      cursor: pointer;
-      transition: all 0.15s ease
-    }
-
-    .score-row:hover {
-      border-color: var(--accent);
-      background: rgba(30, 41, 59, 0.9)
-    }
-
-    .score-team {
-      font: 600 13px/1 'Inter', sans-serif;
-      width: 40px;
-      text-align: center
-    }
-
-    .score-num {
-      font: 700 18px/1 'Space Grotesk', sans-serif;
-      width: 28px;
-      text-align: center
-    }
-
-    .score-vs {
-      font-size: 10px;
-      color: var(--text-3);
-      width: 14px;
-      text-align: center
-    }
-
-    .score-final {
-      font-size: 10px;
-      color: var(--text-3);
-      font-weight: 700;
-      letter-spacing: .5px;
-      margin-left: auto;
-      text-transform: uppercase
-    }
-
-    .score-live {
-      font-size: 10px;
-      color: var(--emerald);
-      font-weight: 800;
-      letter-spacing: .5px;
-      margin-left: auto;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 4px
-    }
-
-    .score-live::before {
-      content: '';
-      display: inline-block;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--emerald);
-      box-shadow: 0 0 8px var(--emerald)
-    }
-
-    .score-time {
-      font-size: 10px;
-      color: var(--text-2);
-      margin-left: auto
-    }
-
-    .wp-bar {
-      height: 5px;
-      border-radius: 3px;
-      background: rgba(51, 65, 85, 0.6);
-      overflow: hidden;
-      margin-top: 4px
-    }
-
-    .wp-fill {
-      height: 100%;
-      border-radius: 3px;
-      background: linear-gradient(90deg, #06b6d4, #10b981)
-    }
-
-    .standing-row {
-      display: flex;
-      align-items: center;
-      padding: 7px 10px;
-      font-size: 12px;
-      gap: 8px
-    }
-
-    .standing-row:nth-child(odd) {
-      background: var(--bg-3);
-      border-radius: 8px
-    }
-
-    .standing-rank {
-      width: 20px;
-      text-align: center;
-      font: 700 12px/1 'Space Grotesk', sans-serif;
-      color: var(--text-3)
-    }
-
-    .standing-team {
-      flex: 1;
-      font-weight: 600
-    }
-
-    .standing-rec {
-      font: 600 12px/1 'Space Grotesk', sans-serif;
-      color: var(--text-2)
-    }
-
-    .h2h-vs {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      padding: 24px;
-      text-align: center
-    }
-
-    .h2h-team {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      flex: 1
-    }
-
-    .h2h-name {
-      font: 700 18px/1 'Space Grotesk', sans-serif
-    }
-
-    .h2h-badge {
-      width: 54px;
-      height: 54px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      background: var(--bg-3);
-      border: 1px solid var(--border-1)
-    }
-
-    .h2h-divider {
-      font: 800 22px/1 'Space Grotesk', sans-serif;
-      color: var(--accent)
-    }
-
-    .share-card {
-      background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
-      border: 1px solid var(--border-1);
-      border-radius: var(--r-lg);
-      padding: 20px;
-      position: relative;
-      overflow: hidden
-    }
-
-    .share-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--purple))
-    }
-
-    .share-card .watermark {
-      position: absolute;
-      bottom: 8px;
-      right: 12px;
-      font: 600 9px 'Inter', sans-serif;
-      color: var(--text-3);
-      letter-spacing: 1px
-    }
-
-    .game-hero {
-      background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
-      border: 1px solid var(--border-1);
-      border-radius: var(--r-lg);
-      padding: 28px;
-      text-align: center;
-      box-shadow: var(--shadow-card)
-    }
-
-    .game-score-big {
-      font: 800 42px/1 'Space Grotesk', sans-serif;
-      margin: 10px 0
-    }
-
-    .game-teams-big {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px
-    }
-
-    .game-team-big {
-      font: 700 20px/1 'Space Grotesk', sans-serif
-    }
-
-    .tab-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 10px
-    }
-
-    .chip {
-      padding: 5px 12px;
-      border-radius: var(--r-full);
-      border: 1px solid var(--border-1);
-      background: var(--bg-3);
-      color: var(--text-2);
-      font: 600 11px/1 'Inter', sans-serif;
-      cursor: pointer;
-      transition: all 0.15s ease
-    }
-
-    .chip:hover,
-    .chip.on {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-bg)
-    }
-
-    .player-card {
-      background: var(--bg-3);
-      border: 1px solid var(--border-1);
-      border-radius: var(--r-lg);
-      padding: 18px;
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.15s ease
-    }
-
-    .player-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px)
-    }
-
-    .player-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--bg-4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-      border: 1px solid var(--border-cyan)
-    }
-
-    .parlay-slip {
-      background: linear-gradient(135deg, rgba(168, 85, 247, .08), rgba(6, 182, 212, .08));
-      border: 1px solid rgba(168, 85, 247, .3);
-      border-radius: var(--r-lg);
-      padding: 18px
-    }
-
-    .parlay-pick {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: var(--bg-3);
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      margin-bottom: 8px
-    }
-
-    .parlay-pick .remove {
-      margin-left: auto;
-      color: var(--red);
-      cursor: pointer;
-      border: none;
-      background: none;
-      font-size: 15px
-    }
-
-    .trend-item {
-      padding: 14px;
-      background: var(--bg-3);
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      cursor: pointer;
-      transition: all 0.15s ease
-    }
-
-    .trend-item:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px)
-    }
-
-    .trend-rank {
-      font: 800 16px/1 'Space Grotesk', sans-serif;
-      color: var(--accent);
-      width: 28px
-    }
-
-    .trend-fire {
-      font-size: 11px;
-      color: var(--orange)
-    }
-
-    .prep-section {
-      background: var(--bg-3);
-      border: 1px solid var(--border-1);
-      border-radius: var(--r);
-      padding: 14px;
-      margin-bottom: 10px
-    }
-
-    .prep-section .prep-title {
-      font: 700 13px/1 'Space Grotesk', sans-serif;
-      color: var(--accent);
-      margin-bottom: 8px
-    }
-
-    .note-area {
-      width: 100%;
-      min-height: 90px;
-      padding: 12px;
-      border-radius: var(--r);
-      border: 1px solid var(--border-1);
-      background: var(--bg-4);
-      color: var(--text-1);
-      font: 13px/1.5 'Inter', sans-serif;
-      resize: vertical;
-      outline: none
-    }
-
-    .note-area:focus {
-      border-color: var(--accent)
-    }
-
-    .alert-badge {
-      background: var(--orange);
-      color: #000;
-      font: 800 10px/1 'Inter', sans-serif;
-      padding: 3px 7px;
-      border-radius: 10px;
-      margin-left: auto
-    }
-
-    ::-webkit-scrollbar {
-      width: 6px
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border-1);
-      border-radius: 3px
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FMFO Sports — Commentator Analytics Control Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg-0:#06060c;--bg-1:#0d0d16;--bg-2:#14141f;--bg-3:#1c1c2b;--bg-4:#232336;--accent:#00e87b;--accent-dim:#00c468;--accent-bg:rgba(0,232,123,.08);--accent-bg2:rgba(0,232,123,.15);--text-1:#eeeef4;--text-2:#9999b0;--text-3:#5a5a72;--border-1:#252538;--border-2:#333348;--red:#ff4466;--orange:#ff9933;--blue:#4488ff;--purple:#a855f7;--gold:#c5a028;--r:10px;--r-lg:14px}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg-0:#f4f4f7;--bg-1:#eaeaef;--bg-2:#fff;--bg-3:#f8f8fb;--bg-4:#eee;--text-1:#111;--text-2:#555;--text-3:#999;--border-1:#ddd;--border-2:#ccc}}
+:root[data-theme="dark"]{--bg-0:#06060c;--bg-1:#0d0d16;--bg-2:#14141f;--bg-3:#1c1c2b;--bg-4:#232336;--text-1:#eeeef4;--text-2:#9999b0;--text-3:#5a5a72;--border-1:#252538;--border-2:#333348}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg-0);color:var(--text-1);min-height:100vh;line-height:1.55}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border-1);background:var(--bg-1);position:sticky;top:0;z-index:100}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font:800 13px/1 'Space Grotesk',sans-serif;color:#000;letter-spacing:-.5px}
+.brand{display:flex;flex-direction:column}
+.brand-name{font:700 17px/1.2 'Space Grotesk',sans-serif;letter-spacing:-.4px}
+.brand-sub{font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1.8px;text-transform:uppercase}
+.hdr-tag{font-size:11px;color:var(--text-3);font-style:italic}
+.mob-tog{display:none;width:34px;height:34px;border-radius:8px;border:1px solid var(--border-1);background:var(--bg-2);color:var(--text-2);cursor:pointer;font-size:16px;align-items:center;justify-content:center}
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 59px)}
+@media(max-width:800px){.shell{grid-template-columns:1fr}.side{display:none}.side.open{display:flex;position:fixed;inset:59px 0 0 0;z-index:90}.mob-tog{display:flex!important}}
+.side{background:var(--bg-1);border-right:1px solid var(--border-1);padding:14px 10px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r);border:none;background:transparent;color:var(--text-2);font:500 12px/1 'Inter',sans-serif;cursor:pointer;width:100%;text-align:left;transition:.12s}
+.nav-btn:hover{background:var(--bg-3);color:var(--text-1)}
+.nav-btn.on{background:var(--accent-bg2);color:var(--accent);font-weight:600}
+.ni{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sep{height:1px;background:var(--border-1);margin:6px 0}
+.stl{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--text-3);font-weight:700;padding:6px 10px 2px}
+.pw{display:flex;align-items:center;gap:8px;padding:8px;border-radius:var(--r);background:var(--accent-bg);border:1px solid rgba(0,232,123,.15);color:var(--accent);font-size:10px;font-weight:600;text-decoration:none;margin-top:auto;transition:.12s}
+.pw:hover{background:var(--accent-bg2)}
+.main{padding:20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.card{background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-lg);padding:18px;transition:border-color .15s}
+.card:hover{border-color:var(--border-2)}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.ct{font:700 15px/1.2 'Space Grotesk',sans-serif}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:960px){.g2,.g3{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}}
+.sc{background:var(--bg-3);border-radius:var(--r);padding:12px;border:1px solid var(--border-1)}
+.sl{font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.5px;margin-bottom:3px}
+.sv{font:700 24px/1 'Space Grotesk',sans-serif}
+.ss{font-size:11px;margin-top:3px;font-weight:600}
+.tabs{display:flex;gap:2px;background:var(--bg-1);border-radius:var(--r);padding:3px;width:fit-content;flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:8px;border:none;background:transparent;color:var(--text-2);font:600 11px/1 'Inter',sans-serif;cursor:pointer;transition:.12s;white-space:nowrap}
+.tab:hover{color:var(--text-1)}
+.tab.on{background:var(--bg-2);color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.tab.pred-on{background:rgba(168,85,247,.15);color:var(--purple)!important}
+.ir{display:flex;gap:8px;margin-bottom:10px}
+.inp{flex:1;padding:9px 12px;border-radius:var(--r);border:1px solid var(--border-1);background:var(--bg-3);color:var(--text-1);font:13px/1 'Inter',sans-serif;outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--accent)}.inp::placeholder{color:var(--text-3)}
+.btn{padding:8px 14px;border-radius:var(--r);border:none;font:600 12px/1 'Inter',sans-serif;cursor:pointer;transition:.12s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.bp{background:var(--accent);color:#000}.bp:hover{background:var(--accent-dim)}.bp:disabled{opacity:.4;cursor:not-allowed}
+.bs{background:var(--bg-3);color:var(--text-2);border:1px solid var(--border-1)}.bs:hover{color:var(--text-1);border-color:var(--border-2)}
+.bd{background:transparent;color:var(--red);border:1px solid rgba(255,68,102,.3)}.bd:hover{background:rgba(255,68,102,.08)}
+.bsm{padding:4px 8px;font-size:10px}
+.qr{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.qp{padding:4px 10px;border-radius:16px;border:1px solid var(--border-1);background:transparent;color:var(--text-2);font:11px/1 'Inter',sans-serif;cursor:pointer;transition:.12s}
+.qp:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.out{min-height:100px;padding:14px;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-1);white-space:pre-wrap;font-size:13px;line-height:1.7;word-break:break-word}
+.out.empty{color:var(--text-3);display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px}
+.thk{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:12px;font-weight:500;padding:14px}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);animation:dp 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+.dot{width:7px;height:7px;border-radius:50%}.dg{background:var(--accent)}.dr{background:var(--red)}.dy{background:var(--orange)}
+.pb{padding:8px 12px;border-radius:var(--r);background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);font-size:11px;color:var(--purple);margin-bottom:8px}
+.fi{padding:10px;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-1);display:flex;gap:10px;align-items:flex-start;cursor:pointer;transition:.12s}
+.fi:hover{border-color:var(--border-2)}
+.hb{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.hq{font:600 12px/1.3 'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm{font-size:10px;color:var(--text-3);margin-top:2px}
+.pr{display:flex;gap:6px;padding:8px 10px;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-1);align-items:center;flex-wrap:wrap}
+.pp{font:600 12px/1.3 'Inter',sans-serif;flex:1;min-width:0}
+.pt{font:700 10px/1 'Inter',sans-serif;padding:2px 7px;border-radius:10px;letter-spacing:.4px}
+.pw2{background:rgba(0,232,123,.15);color:var(--accent)}.pl{background:rgba(255,68,102,.15);color:var(--red)}.ppn{background:rgba(153,153,176,.15);color:var(--text-2)}
+.cp{background:var(--bg-3);border:1px solid var(--border-1);border-radius:var(--r);padding:12px;white-space:pre-wrap;font-size:12px;line-height:1.6;max-height:180px;overflow-y:auto}
+.es{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 16px;color:var(--text-3);text-align:center;gap:6px}
+.es .big{font-size:28px}
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-1)}
+.lb-rank{font:800 16px/1 'Space Grotesk',sans-serif;width:28px;text-align:center}
+.lb-name{font:600 13px/1 'Inter',sans-serif;flex:1}
+.lb-stat{font:700 13px/1 'Space Grotesk',sans-serif}
+.wl-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-1);justify-content:space-between}
+.team-card{background:var(--bg-3);border:1px solid var(--border-1);border-radius:var(--r);padding:14px;cursor:pointer;transition:.12s;text-align:center}
+.team-card:hover{border-color:var(--accent);background:var(--bg-4)}
+.team-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.team-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.score-row{display:flex;align-items:center;padding:8px 10px;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-1);gap:6px;cursor:pointer;transition:.12s}
+.score-row:hover{border-color:var(--accent)}
+.score-team{font:600 12px/1 'Inter',sans-serif;width:36px;text-align:center}
+.score-num{font:700 16px/1 'Space Grotesk',sans-serif;width:24px;text-align:center}
+.score-vs{font-size:10px;color:var(--text-3);width:12px;text-align:center}
+.score-final{font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.5px;margin-left:auto;text-transform:uppercase}
+.score-live{font-size:9px;color:var(--accent);font-weight:700;letter-spacing:.5px;margin-left:auto;text-transform:uppercase}
+.score-time{font-size:10px;color:var(--text-2);margin-left:auto}
+.wp-bar{height:4px;border-radius:2px;background:var(--border-1);overflow:hidden;margin-top:4px}
+.wp-fill{height:100%;border-radius:2px;background:var(--accent)}
+.standing-row{display:flex;align-items:center;padding:5px 8px;font-size:12px;gap:6px}
+.standing-row:nth-child(odd){background:var(--bg-3);border-radius:6px}
+.standing-rank{width:18px;text-align:center;font:700 11px/1 'Space Grotesk',sans-serif;color:var(--text-3)}
+.standing-team{flex:1;font-weight:600}
+.standing-rec{font:600 12px/1 'Space Grotesk',sans-serif;color:var(--text-2)}
+.h2h-vs{display:flex;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center}
+.h2h-team{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.h2h-name{font:700 16px/1 'Space Grotesk',sans-serif}
+.h2h-badge{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.h2h-divider{font:800 20px/1 'Space Grotesk',sans-serif;color:var(--text-3)}
+.share-card{background:linear-gradient(135deg,var(--bg-2),var(--bg-3));border:1px solid var(--border-1);border-radius:var(--r-lg);padding:20px;position:relative;overflow:hidden}
+.share-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple))}
+.share-card .watermark{position:absolute;bottom:8px;right:12px;font:600 9px 'Inter',sans-serif;color:var(--text-3);letter-spacing:1px}
+.game-hero{background:linear-gradient(135deg,var(--bg-2),var(--bg-3));border:1px solid var(--border-1);border-radius:var(--r-lg);padding:24px;text-align:center}
+.game-score-big{font:800 36px/1 'Space Grotesk',sans-serif;margin:8px 0}
+.game-teams-big{display:flex;align-items:center;justify-content:center;gap:20px}
+.game-team-big{font:700 18px/1 'Space Grotesk',sans-serif}
+.tab-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.chip{padding:4px 10px;border-radius:14px;border:1px solid var(--border-1);background:transparent;color:var(--text-2);font:600 10px/1 'Inter',sans-serif;cursor:pointer;transition:.12s}
+.chip:hover,.chip.on{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.player-card{background:var(--bg-3);border:1px solid var(--border-1);border-radius:var(--r-lg);padding:16px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:.12s}
+.player-card:hover{border-color:var(--accent)}
+.player-avatar{width:44px;height:44px;border-radius:50%;background:var(--bg-4);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.parlay-slip{background:linear-gradient(135deg,rgba(168,85,247,.06),rgba(0,232,123,.06));border:1px solid rgba(168,85,247,.2);border-radius:var(--r-lg);padding:16px}
+.parlay-pick{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-1);margin-bottom:6px}
+.parlay-pick .remove{margin-left:auto;color:var(--red);cursor:pointer;border:none;background:none;font-size:14px}
+.trend-item{padding:12px;background:var(--bg-3);border-radius:var(--r);border:1px solid var(--border-1);cursor:pointer;transition:.12s}
+.trend-item:hover{border-color:var(--accent)}
+.trend-rank{font:800 14px/1 'Space Grotesk',sans-serif;color:var(--accent);width:24px}
+.trend-fire{font-size:10px;color:var(--orange)}
+.prep-section{background:var(--bg-3);border:1px solid var(--border-1);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.prep-section .prep-title{font:700 12px/1 'Space Grotesk',sans-serif;color:var(--accent);margin-bottom:6px}
+.note-area{width:100%;min-height:80px;padding:10px;border-radius:var(--r);border:1px solid var(--border-1);background:var(--bg-4);color:var(--text-1);font:13px/1.5 'Inter',sans-serif;resize:vertical;outline:none}
+.note-area:focus{border-color:var(--accent)}
+.alert-badge{background:var(--orange);color:#000;font:700 10px/1 'Inter',sans-serif;padding:2px 6px;border-radius:8px;margin-left:auto}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-1);border-radius:3px}
+</style>
 </head>
-
 <body>
-  <div class="hdr">
-    <div class="hdr-left">
-      <button class="mob-tog" onclick="document.getElementById('side').classList.toggle('open')">☰</button>
-      <div class="logo">FS</div>
-      <div class="brand">
-        <div class="brand-name">FMFO Sports</div>
-        <div class="brand-sub">Analytics Control Room</div>
-      </div>
-    </div>
-    <div class="hdr-tag">The Intelligence Behind the Commentary</div>
+<div class="hdr">
+  <div class="hdr-left">
+    <button class="mob-tog" onclick="document.getElementById('side').classList.toggle('open')">☰</button>
+    <div class="logo">FS</div>
+    <div class="brand"><div class="brand-name">FMFO Sports</div><div class="brand-sub">Analytics Control Room</div></div>
   </div>
-  <div class="shell">
-    <aside class="side" id="side"></aside>
-    <main class="main" id="main"></main>
-  </div>
-  <script src="api.js"></script>
-  <script>
-    const SP = [
-      { id: 'nfl', name: 'NFL Football', icon: '🏈', c: '#013369', teams: ['Chiefs', 'Ravens', '49ers', 'Lions', 'Bills', 'Eagles', 'Cowboys', 'Dolphins', 'Bengals', 'Jets', 'Packers', 'Texans', 'Bears', 'Steelers', 'Browns'] },
-      { id: 'nba', name: 'NBA Basketball', icon: '🏀', c: '#c9082a', teams: ['Celtics', 'Thunder', 'Nuggets', 'Timberwolves', 'Knicks', 'Lakers', 'Warriors', 'Bucks', 'Mavericks', 'Clippers', '76ers', 'Heat', 'Suns', 'Cavaliers'] },
-      { id: 'mlb', name: 'MLB Baseball', icon: '⚾', c: '#002d72', teams: ['Dodgers', 'Braves', 'Yankees', 'Astros', 'Phillies', 'Orioles', 'Rangers', 'Twins', 'Guardians', 'Padres', 'Rays', 'Diamondbacks', 'Mariners', 'Brewers'] },
-      { id: 'nhl', name: 'NHL Hockey', icon: '🏒', c: '#555', teams: ['Panthers', 'Oilers', 'Stars', 'Rangers', 'Avalanche', 'Bruins', 'Hurricanes', 'Canucks', 'Maple Leafs', 'Jets', 'Kings', 'Wild', 'Lightning', 'Predators'] },
-      { id: 'soccer', name: 'Soccer', icon: '⚽', c: '#1a8f3c', teams: ['Man City', 'Arsenal', 'Liverpool', 'Real Madrid', 'Barcelona', 'Bayern Munich', 'PSG', 'Inter Milan', 'Dortmund', 'Napoli', 'Chelsea', 'Juventus', 'AC Milan'] },
-      { id: 'mma', name: 'MMA / Combat', icon: '🥊', c: '#8b0000', teams: ['Heavyweight', 'Light Heavyweight', 'Middleweight', 'Welterweight', 'Lightweight', 'Featherweight', 'Bantamweight', 'Flyweight', "Women's Divisions"] },
-      { id: 'boxing', name: 'Boxing', icon: '🥋', c: '#c5a028', teams: ['Heavyweight', 'Cruiserweight', 'Light Heavyweight', 'Super Middleweight', 'Middleweight', 'Welterweight', 'Lightweight', 'Featherweight', 'Super Bantamweight'] },
-    ];
-    const MODES = [{ id: 'pre', label: 'Pre-Game Intel', icon: '📋' }, { id: 'live', label: 'Live Analysis', icon: '🔴' }, { id: 'post', label: 'Post-Game Review', icon: '📊' }, { id: 'pred', label: 'Predictions', icon: '🔮' }];
-    const QP = {
-      pre: { nfl: ['Key matchups to watch', 'Injury report impact', 'O vs D rankings', 'Weather impact'], nba: ['Player efficiency trends', 'B2B fatigue analysis', '3pt shooting trends', 'Rookie impact'], mlb: ['Pitcher matchup analysis', 'Batting hot streaks', 'Bullpen fatigue risk', 'Park factors'], nhl: ['Goalie save % trends', 'Power play efficiency', 'Line combos', 'Home/away splits'], soccer: ['xG leaders analysis', 'Pressing matchups', 'Set piece rates', 'Rotation predictions'], mma: ['Tale of the tape', 'Striking vs grappling', 'Win streak momentum', 'Judge tendencies'], boxing: ['Reach and tale of tape', 'Camp/trainer breakdown', 'Orthodox vs southpaw', 'Belt implications'] },
-      live: { nfl: ['Momentum shifts', 'Play-calling trends', 'Red zone efficiency', 'Turnover impact'], nba: ['Run analysis', 'Foul trouble impact', 'Pace comparison', 'Lineup +/-'], mlb: ['Pitch count watch', 'Situational hitting', 'Defensive shifts', 'Bullpen tracker'], nhl: ['Shot differential', 'Zone time', 'PK performance', 'Faceoff rates'], soccer: ['Possession control', 'Sub impact', 'Shape analysis', 'xG update'], mma: ['Round scorecard', 'Strike analysis', 'Takedown defense', 'Cardio tracking'], boxing: ['Round scorecard', 'Punch accuracy', 'Body work impact', 'Corner adjustments'] },
-      post: { nfl: ['Turning points', 'MVP breakdown', 'Playoff impact', 'Coaching grade'], nba: ['Box score dive', 'Clutch performance', 'Season impact', 'POTG case'], mlb: ['Pitching grade', 'Key at-bats', 'Series impact', 'Defense highlights'], nhl: ['Shot quality', 'Special teams grade', 'Standings impact', 'Three stars'], soccer: ['Player ratings', 'Tactical summary', 'Table impact', 'Manager review'], mma: ['Fight scoring', 'Rankings impact', 'Bonus worthy', 'What next'], boxing: ['Scorecard review', 'Punch stats', 'Division impact', 'Rematch case'] },
-      pred: { nfl: ['Upset predictions', 'Over/under analysis', 'Playoff projections', 'Bold season picks'], nba: ['MVP prediction', 'Winners with confidence %', 'Title contenders', 'Breakout players'], mlb: ['Pitching duel outcome', 'Seed projections', 'Series predictions', 'HR pace projection'], nhl: ['Tonight\'s outcomes', 'Cup contenders', 'Goalie winner', 'Points pace'], soccer: ['Match result %', 'Title projection', 'Scorer predictions', 'Relegation forecast'], mma: ['Outcome + method', 'Underdog upsets', 'Round prediction', 'Best parlay'], boxing: ['KO, TKO or decision', 'Round prediction', 'Underdog breakdown', 'P4P forecast'] }
-    };
+  <div class="hdr-tag">The Intelligence Behind the Commentary</div>
+</div>
+<div class="shell">
+  <aside class="side" id="side"></aside>
+  <main class="main" id="main"></main>
+</div>
+<script src="api.js"></script>
+<script>
+const SP=[
+  {id:'nfl',name:'NFL Football',icon:'🏈',c:'#013369',teams:['Chiefs','Ravens','49ers','Lions','Bills','Eagles','Cowboys','Dolphins','Bengals','Jets','Packers','Texans','Bears','Steelers','Browns']},
+  {id:'nba',name:'NBA Basketball',icon:'🏀',c:'#c9082a',teams:['Celtics','Thunder','Nuggets','Timberwolves','Knicks','Lakers','Warriors','Bucks','Mavericks','Clippers','76ers','Heat','Suns','Cavaliers']},
+  {id:'mlb',name:'MLB Baseball',icon:'⚾',c:'#002d72',teams:['Dodgers','Braves','Yankees','Astros','Phillies','Orioles','Rangers','Twins','Guardians','Padres','Rays','Diamondbacks','Mariners','Brewers']},
+  {id:'nhl',name:'NHL Hockey',icon:'🏒',c:'#555',teams:['Panthers','Oilers','Stars','Rangers','Avalanche','Bruins','Hurricanes','Canucks','Maple Leafs','Jets','Kings','Wild','Lightning','Predators']},
+  {id:'soccer',name:'Soccer',icon:'⚽',c:'#1a8f3c',teams:['Man City','Arsenal','Liverpool','Real Madrid','Barcelona','Bayern Munich','PSG','Inter Milan','Dortmund','Napoli','Chelsea','Juventus','AC Milan']},
+  {id:'mma',name:'MMA / Combat',icon:'🥊',c:'#8b0000',teams:['Heavyweight','Light Heavyweight','Middleweight','Welterweight','Lightweight','Featherweight','Bantamweight','Flyweight',"Women's Divisions"]},
+  {id:'boxing',name:'Boxing',icon:'🥋',c:'#c5a028',teams:['Heavyweight','Cruiserweight','Light Heavyweight','Super Middleweight','Middleweight','Welterweight','Lightweight','Featherweight','Super Bantamweight']},
+];
+const MODES=[{id:'pre',label:'Pre-Game Intel',icon:'📋'},{id:'live',label:'Live Analysis',icon:'🔴'},{id:'post',label:'Post-Game Review',icon:'📊'},{id:'pred',label:'Predictions',icon:'🔮'}];
+const QP={
+  pre:{nfl:['Key matchups to watch','Injury report impact','O vs D rankings','Weather impact'],nba:['Player efficiency trends','B2B fatigue analysis','3pt shooting trends','Rookie impact'],mlb:['Pitcher matchup analysis','Batting hot streaks','Bullpen fatigue risk','Park factors'],nhl:['Goalie save % trends','Power play efficiency','Line combos','Home/away splits'],soccer:['xG leaders analysis','Pressing matchups','Set piece rates','Rotation predictions'],mma:['Tale of the tape','Striking vs grappling','Win streak momentum','Judge tendencies'],boxing:['Reach and tale of tape','Camp/trainer breakdown','Orthodox vs southpaw','Belt implications']},
+  live:{nfl:['Momentum shifts','Play-calling trends','Red zone efficiency','Turnover impact'],nba:['Run analysis','Foul trouble impact','Pace comparison','Lineup +/-'],mlb:['Pitch count watch','Situational hitting','Defensive shifts','Bullpen tracker'],nhl:['Shot differential','Zone time','PK performance','Faceoff rates'],soccer:['Possession control','Sub impact','Shape analysis','xG update'],mma:['Round scorecard','Strike analysis','Takedown defense','Cardio tracking'],boxing:['Round scorecard','Punch accuracy','Body work impact','Corner adjustments']},
+  post:{nfl:['Turning points','MVP breakdown','Playoff impact','Coaching grade'],nba:['Box score dive','Clutch performance','Season impact','POTG case'],mlb:['Pitching grade','Key at-bats','Series impact','Defense highlights'],nhl:['Shot quality','Special teams grade','Standings impact','Three stars'],soccer:['Player ratings','Tactical summary','Table impact','Manager review'],mma:['Fight scoring','Rankings impact','Bonus worthy','What next'],boxing:['Scorecard review','Punch stats','Division impact','Rematch case']},
+  pred:{nfl:['Upset predictions','Over/under analysis','Playoff projections','Bold season picks'],nba:['MVP prediction','Winners with confidence %','Title contenders','Breakout players'],mlb:['Pitching duel outcome','Seed projections','Series predictions','HR pace projection'],nhl:['Tonight\'s outcomes','Cup contenders','Goalie winner','Points pace'],soccer:['Match result %','Title projection','Scorer predictions','Relegation forecast'],mma:['Outcome + method','Underdog upsets','Round prediction','Best parlay'],boxing:['KO, TKO or decision','Round prediction','Underdog breakdown','P4P forecast']}
+};
 
-    let S = { page: 'dashboard', sport: 'nfl', mode: 'pre', team: null, history: [], saved: [], predictions: [], watchlist: [], leaderboard: [], output: '', loading: false, contentDraft: '', alerts: [], liveData: {}, h2h: { teamA: '', teamB: '', result: '' }, gameCtx: null, parlay: [], prepNotes: '', trendCache: '' };
-    let ctl = null, aiReady = false, dbReady = false, myId = "default", myName = "Analyst", tierInfo = null;
+let S={page:'dashboard',sport:'nfl',mode:'pre',team:null,history:[],saved:[],predictions:[],watchlist:[],leaderboard:[],output:'',loading:false,contentDraft:'',alerts:[],liveData:{},h2h:{teamA:'',teamB:'',result:''},gameCtx:null,parlay:[],prepNotes:'',trendCache:''};
+let ctl=null,aiReady=false,dbReady=false,myId="default",myName="Analyst",tierInfo=null;
 
-    async function boot() {
-      render();
-      try {
-        const h = await FMFO.health();
-        aiReady = h.ai; dbReady = true;
-        tierInfo = await FMFO.getTier();
-        myName = tierInfo?.label || 'Analyst';
-        await loadAll();
-        await loadLive();
-      } catch (e) { console.log('boot err', e) }
-      checkAlerts();
-      render();
-    }
+async function boot(){
+  render();
+  try{
+    const h=await FMFO.health();
+    aiReady=h.ai;dbReady=true;
+    tierInfo=await FMFO.getTier();
+    myName=tierInfo?.label||'Analyst';
+    await loadAll();
+    await loadLive();
+  }catch(e){console.log('boot err',e)}
+  checkAlerts();
+  render();
+}
 
-    async function loadLive() {
-      const ids = ['nfl', 'nba', 'mlb', 'nhl', 'epl'];
-      for (const id of ids) {
-        try { S.liveData[id] = await FMFO.getScores(id) } catch (e) { }
-      }
-    }
+async function loadLive(){
+  const ids=['nfl','nba','mlb','nhl','epl'];
+  for(const id of ids){
+    try{S.liveData[id]=await FMFO.getScores(id)}catch(e){}
+  }
+}
 
-    async function loadAll() {
-      try {
-        const [a, p, lb] = await Promise.all([
-          FMFO.getAnalyses(),
-          FMFO.getPredictions(),
-          FMFO.getLeaderboard(),
-        ]);
-        if (a?.length) S.saved = a;
-        if (p?.length) S.predictions = p;
-        if (lb?.length) S.leaderboard = lb;
-      } catch (e) { console.log('load err', e) }
-    }
+async function loadAll(){
+  try{
+    const[a,p,lb]=await Promise.all([
+      FMFO.getAnalyses(),
+      FMFO.getPredictions(),
+      FMFO.getLeaderboard(),
+    ]);
+    if(a?.length)S.saved=a;
+    if(p?.length)S.predictions=p;
+    if(lb?.length)S.leaderboard=lb;
+  }catch(e){console.log('load err',e)}
+}
 
-    async function loadLeaderboard() {
-      try { S.leaderboard = await FMFO.getLeaderboard() } catch (e) { }
-    }
+async function loadLeaderboard(){
+  try{S.leaderboard=await FMFO.getLeaderboard()}catch(e){}
+}
 
-    async function updateMyLeaderboard() {
-      try { await loadLeaderboard() } catch (e) { }
-    }
+async function updateMyLeaderboard(){
+  try{await loadLeaderboard()}catch(e){}
+}
 
-    async function dbSave(col, data) { try { return await FMFO.post(`/${col}`, data) } catch (e) { return null } }
-    async function dbDel(col, id) { if (!id) return; try { await FMFO.del(`/${col}/${id}`) } catch (e) { } }
-    async function dbUp(col, id, data) { if (!id) return; try { await FMFO.patch(`/${col}/${id}`, data) } catch (e) { } }
+async function dbSave(col,data){try{return await FMFO.post(`/${col}`,data)}catch(e){return null}}
+async function dbDel(col,id){if(!id)return;try{await FMFO.del(`/${col}/${id}`)}catch(e){}}
+async function dbUp(col,id,data){if(!id)return;try{await FMFO.patch(`/${col}/${id}`,data)}catch(e){}}
 
-    function checkAlerts() {
-      S.alerts = [];
-      const pending = S.predictions.filter(p => p.result === 'pending');
-      if (pending.length >= 3) S.alerts.push({ text: `${pending.length} predictions need results`, action: 'predictions' });
-      S.watchlist.forEach(w => {
-        const lastAnalysis = S.saved.filter(a => a.sport === w.sport && a.query?.toLowerCase().includes(w.team.toLowerCase())).sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))[0];
-        if (!lastAnalysis) S.alerts.push({ text: `${w.team} — no analysis yet`, action: 'analyze', sport: w.sport, team: w.team });
-      });
-    }
+function checkAlerts(){
+  S.alerts=[];
+  const pending=S.predictions.filter(p=>p.result==='pending');
+  if(pending.length>=3)S.alerts.push({text:`${pending.length} predictions need results`,action:'predictions'});
+  S.watchlist.forEach(w=>{
+    const lastAnalysis=S.saved.filter(a=>a.sport===w.sport&&a.query?.toLowerCase().includes(w.team.toLowerCase())).sort((a,b)=>new Date(b.savedAt)-new Date(a.savedAt))[0];
+    if(!lastAnalysis)S.alerts.push({text:`${w.team} — no analysis yet`,action:'analyze',sport:w.sport,team:w.team});
+  });
+}
 
-    function render() { renderSide(); renderMain() }
+function render(){renderSide();renderMain()}
 
-    function renderSide() {
-      const s = document.getElementById('side');
-      const alertCount = S.alerts.length;
-      s.innerHTML = `
-    <button class="nav-btn ${S.page === 'dashboard' ? 'on' : ''}" onclick="go('dashboard')"><div class="ni">🏠</div>Dashboard${alertCount ? `<span class="alert-badge">${alertCount}</span>` : ''}</button>
-    <button class="nav-btn ${S.page === 'scores' ? 'on' : ''}" onclick="go('scores')"><div class="ni">📡</div>Live Scores</button>
-    <button class="nav-btn ${S.page === 'analyze' ? 'on' : ''}" onclick="go('analyze')"><div class="ni">⚡</div>Analyze</button>
-    <button class="nav-btn ${S.page === 'teams' ? 'on' : ''}" onclick="go('teams')"><div class="ni">🏟️</div>Team Hub</button>
-    <button class="nav-btn ${S.page === 'predictions' ? 'on' : ''}" onclick="go('predictions')"><div class="ni">🔮</div>Predictions</button>
-    <button class="nav-btn ${S.page === 'leaderboard' ? 'on' : ''}" onclick="go('leaderboard')"><div class="ni">🏆</div>Leaderboard</button>
-    <button class="nav-btn ${S.page === 'watchlist' ? 'on' : ''}" onclick="go('watchlist')"><div class="ni">👁️</div>Watchlist${S.watchlist.length ? `<span style="font-size:10px;color:var(--text-3);margin-left:auto">${S.watchlist.length}</span>` : ''}</button>
-    <button class="nav-btn ${S.page === 'h2h' ? 'on' : ''}" onclick="go('h2h')"><div class="ni">⚔️</div>Head-to-Head</button>
-    <button class="nav-btn ${S.page === 'player' ? 'on' : ''}" onclick="go('player')"><div class="ni">🎯</div>Player Spotlight</button>
-    <button class="nav-btn ${S.page === 'parlay' ? 'on' : ''}" onclick="go('parlay')"><div class="ni">🎰</div>Parlay Builder</button>
-    <button class="nav-btn ${S.page === 'trending' ? 'on' : ''}" onclick="go('trending')"><div class="ni">🔥</div>Trending</button>
-    <button class="nav-btn ${S.page === 'prep' ? 'on' : ''}" onclick="go('prep')"><div class="ni">📋</div>Prep Sheet</button>
-    <button class="nav-btn ${S.page === 'content' ? 'on' : ''}" onclick="go('content')"><div class="ni">📝</div>Content</button>
-    <button class="nav-btn ${S.page === 'library' ? 'on' : ''}" onclick="go('library')"><div class="ni">📚</div>Library</button>
+function renderSide(){
+  const s=document.getElementById('side');
+  const alertCount=S.alerts.length;
+  s.innerHTML=`
+    <button class="nav-btn ${S.page==='dashboard'?'on':''}" onclick="go('dashboard')"><div class="ni">🏠</div>Dashboard${alertCount?`<span class="alert-badge">${alertCount}</span>`:''}</button>
+    <button class="nav-btn ${S.page==='scores'?'on':''}" onclick="go('scores')"><div class="ni">📡</div>Live Scores</button>
+    <button class="nav-btn ${S.page==='analyze'?'on':''}" onclick="go('analyze')"><div class="ni">⚡</div>Analyze</button>
+    <button class="nav-btn ${S.page==='teams'?'on':''}" onclick="go('teams')"><div class="ni">🏟️</div>Team Hub</button>
+    <button class="nav-btn ${S.page==='predictions'?'on':''}" onclick="go('predictions')"><div class="ni">🔮</div>Predictions</button>
+    <button class="nav-btn ${S.page==='leaderboard'?'on':''}" onclick="go('leaderboard')"><div class="ni">🏆</div>Leaderboard</button>
+    <button class="nav-btn ${S.page==='watchlist'?'on':''}" onclick="go('watchlist')"><div class="ni">👁️</div>Watchlist${S.watchlist.length?`<span style="font-size:10px;color:var(--text-3);margin-left:auto">${S.watchlist.length}</span>`:''}</button>
+    <button class="nav-btn ${S.page==='h2h'?'on':''}" onclick="go('h2h')"><div class="ni">⚔️</div>Head-to-Head</button>
+    <button class="nav-btn ${S.page==='player'?'on':''}" onclick="go('player')"><div class="ni">🎯</div>Player Spotlight</button>
+    <button class="nav-btn ${S.page==='parlay'?'on':''}" onclick="go('parlay')"><div class="ni">🎰</div>Parlay Builder</button>
+    <button class="nav-btn ${S.page==='trending'?'on':''}" onclick="go('trending')"><div class="ni">🔥</div>Trending</button>
+    <button class="nav-btn ${S.page==='prep'?'on':''}" onclick="go('prep')"><div class="ni">📋</div>Prep Sheet</button>
+    <button class="nav-btn ${S.page==='content'?'on':''}" onclick="go('content')"><div class="ni">📝</div>Content</button>
+    <button class="nav-btn ${S.page==='library'?'on':''}" onclick="go('library')"><div class="ni">📚</div>Library</button>
     <div class="sep"></div>
     <div class="stl">Sports</div>
-    ${SP.map(sp => `<button class="nav-btn ${S.sport === sp.id && (S.page === 'analyze' || S.page === 'teams' || S.page === 'scores') ? 'on' : ''}" onclick="pickSport('${sp.id}')">
+    ${SP.map(sp=>`<button class="nav-btn ${S.sport===sp.id&&(S.page==='analyze'||S.page==='teams'||S.page==='scores')?'on':''}" onclick="pickSport('${sp.id}')">
       <div class="ni" style="background:${sp.c}18;font-size:12px">${sp.icon}</div><span style="font-size:11px">${sp.name}</span>
     </button>`).join('')}
     <div class="sep"></div>
     <div class="sc" style="margin:2px 0;padding:8px">
       <div style="font-size:10px;color:var(--text-3);font-weight:600;margin-bottom:2px">👤 ${esc(myName)}</div>
-      <div style="font-size:10px;color:var(--text-2)">${S.history.length + S.saved.length} analyses · ${S.predictions.length} predictions</div>
+      <div style="font-size:10px;color:var(--text-2)">${S.history.length+S.saved.length} analyses · ${S.predictions.length} predictions</div>
     </div>
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3);padding:0 4px">
-      <div class="dot ${aiReady ? 'dg' : 'dr'}"></div>${aiReady ? 'AI On' : 'Off'}
-      <div class="dot ${dbReady ? 'dg' : 'dy'}" style="margin-left:4px"></div>${dbReady ? 'Synced' : 'Local'}
+      <div class="dot ${aiReady?'dg':'dr'}"></div>${aiReady?'AI On':'Off'}
+      <div class="dot ${dbReady?'dg':'dy'}" style="margin-left:4px"></div>${dbReady?'Synced':'Local'}
     </div>
     <a href="https://www.formyfansonly.com" target="_blank" class="pw">⚡ formyfansonly.com</a>`;
-    }
+}
 
-    function renderMain() {
-      const m = document.getElementById('main');
-      const pages = { dashboard: renderDashboard, scores: renderScores, analyze: renderAnalyze, teams: renderTeams, predictions: renderPredictions, leaderboard: renderLeaderboard, watchlist: renderWatchlist, h2h: renderH2H, player: renderPlayer, parlay: renderParlay, trending: renderTrending, prep: renderPrep, content: renderContent, library: renderLibrary, gameDetail: renderGameDetail };
-      m.innerHTML = (pages[S.page] || renderDashboard)();
-      if (S.page === 'analyze') { renderOutput(); renderStatus() }
-    }
+function renderMain(){
+  const m=document.getElementById('main');
+  const pages={dashboard:renderDashboard,scores:renderScores,analyze:renderAnalyze,teams:renderTeams,predictions:renderPredictions,leaderboard:renderLeaderboard,watchlist:renderWatchlist,h2h:renderH2H,player:renderPlayer,parlay:renderParlay,trending:renderTrending,prep:renderPrep,content:renderContent,library:renderLibrary,gameDetail:renderGameDetail};
+  m.innerHTML=(pages[S.page]||renderDashboard)();
+  if(S.page==='analyze'){renderOutput();renderStatus()}
+}
 
-    function renderDashboard() {
-      const w = S.predictions.filter(p => p.result === 'win').length, l = S.predictions.filter(p => p.result === 'loss').length, pn = S.predictions.filter(p => p.result === 'pending').length;
-      const pct = (w + l) ? Math.round(w / (w + l) * 100) : 0;
-      const recent = S.history.slice(-5).reverse();
-      const sBreak = {}; S.history.forEach(h => { sBreak[h.sport] = (sBreak[h.sport] || 0) + 1 });
-      const topSp = Object.entries(sBreak).sort((a, b) => b[1] - a[1])[0];
-      return `
+function renderDashboard(){
+  const w=S.predictions.filter(p=>p.result==='win').length,l=S.predictions.filter(p=>p.result==='loss').length,pn=S.predictions.filter(p=>p.result==='pending').length;
+  const pct=(w+l)?Math.round(w/(w+l)*100):0;
+  const recent=S.history.slice(-5).reverse();
+  const sBreak={};S.history.forEach(h=>{sBreak[h.sport]=(sBreak[h.sport]||0)+1});
+  const topSp=Object.entries(sBreak).sort((a,b)=>b[1]-a[1])[0];
+  return `
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <div><div class="ct" style="font-size:18px">Welcome back, ${esc(myName)}</div>
       <div style="font-size:12px;color:var(--text-2);margin-top:2px">What Are You A Fan Of?</div></div>
       <button class="btn bp" onclick="go('analyze')">⚡ Analyze</button>
     </div>
-    ${S.alerts.length ? `<div class="card" style="border-color:var(--orange);border-style:dashed">
+    ${S.alerts.length?`<div class="card" style="border-color:var(--orange);border-style:dashed">
       <div class="ct" style="margin-bottom:8px;color:var(--orange)">⚠️ Alerts</div>
-      ${S.alerts.map(a => `<div class="fi" onclick="${a.action === 'predictions' ? `go('predictions')` : `pickSport('${a.sport}')`}" style="padding:8px;margin-bottom:4px">
+      ${S.alerts.map(a=>`<div class="fi" onclick="${a.action==='predictions'?`go('predictions')`:`pickSport('${a.sport}')`}" style="padding:8px;margin-bottom:4px">
         <span style="font-size:12px">${esc(a.text)}</span>
         <span style="font-size:10px;color:var(--accent);margin-left:auto">→</span>
       </div>`).join('')}
-    </div>`: ''}
+    </div>`:''}
     <div class="g4">
-      <div class="sc"><div class="sl">Analyses</div><div class="sv">${S.history.length + S.saved.length}</div></div>
-      <div class="sc"><div class="sl">Predictions</div><div class="sv">${S.predictions.length}</div>${pn ? `<div class="ss" style="color:var(--orange)">${pn} pending</div>` : ''}</div>
-      <div class="sc"><div class="sl">Accuracy</div><div class="sv" style="color:${pct >= 60 ? 'var(--accent)' : pct >= 40 ? 'var(--orange)' : 'var(--red)'}">${pct ? pct + '%' : '—'}</div><div class="ss" style="color:var(--text-3)">${w}W–${l}L</div></div>
+      <div class="sc"><div class="sl">Analyses</div><div class="sv">${S.history.length+S.saved.length}</div></div>
+      <div class="sc"><div class="sl">Predictions</div><div class="sv">${S.predictions.length}</div>${pn?`<div class="ss" style="color:var(--orange)">${pn} pending</div>`:''}</div>
+      <div class="sc"><div class="sl">Accuracy</div><div class="sv" style="color:${pct>=60?'var(--accent)':pct>=40?'var(--orange)':'var(--red)'}">${pct?pct+'%':'—'}</div><div class="ss" style="color:var(--text-3)">${w}W–${l}L</div></div>
       <div class="sc"><div class="sl">Watching</div><div class="sv">${S.watchlist.length}</div><div class="ss" style="color:var(--text-3)">teams</div></div>
     </div>
     ${renderLiveTicker()}
     <div class="g2">
       <div class="card">
         <div class="ch"><div class="ct">Watchlist</div><button class="btn bs bsm" onclick="go('watchlist')">Manage</button></div>
-        ${S.watchlist.length ? S.watchlist.slice(0, 5).map(w2 => {
-        const sp = SP.find(s => s.id === w2.sport); return `
-          <div class="fi" onclick="analyzeTeam('${w2.sport}','${w2.team.replace(/'/g, "\\'")}')" style="padding:6px;margin-bottom:4px">
-            <div class="hb" style="background:${sp?.c || '#333'}18;font-size:12px">${sp?.icon || '📊'}</div>
+        ${S.watchlist.length?S.watchlist.slice(0,5).map(w2=>{const sp=SP.find(s=>s.id===w2.sport);return `
+          <div class="fi" onclick="analyzeTeam('${w2.sport}','${w2.team.replace(/'/g,"\\'")}')" style="padding:6px;margin-bottom:4px">
+            <div class="hb" style="background:${sp?.c||'#333'}18;font-size:12px">${sp?.icon||'📊'}</div>
             <div style="flex:1"><div class="hq">${esc(w2.team)}</div><div class="hm">${sp?.name}</div></div>
             <span style="font-size:10px;color:var(--accent)">Analyze →</span>
-          </div>`}).join('') : `<div class="es"><div class="big">👁️</div><div style="font-size:12px">Add teams to your watchlist</div></div>`}
+          </div>`}).join(''):`<div class="es"><div class="big">👁️</div><div style="font-size:12px">Add teams to your watchlist</div></div>`}
       </div>
       <div class="card">
         <div class="ch"><div class="ct">Recent</div><button class="btn bs bsm" onclick="go('library')">All</button></div>
-        ${recent.length ? recent.map((h, i) => {
-          const sp = SP.find(s => s.id === h.sport); return `
-          <div class="fi" onclick="viewHist(${S.history.length - 1 - i})" style="padding:6px;margin-bottom:4px">
-            <div class="hb" style="background:${sp?.c || '#333'}18;font-size:12px">${sp?.icon || '📊'}</div>
+        ${recent.length?recent.map((h,i)=>{const sp=SP.find(s=>s.id===h.sport);return `
+          <div class="fi" onclick="viewHist(${S.history.length-1-i})" style="padding:6px;margin-bottom:4px">
+            <div class="hb" style="background:${sp?.c||'#333'}18;font-size:12px">${sp?.icon||'📊'}</div>
             <div style="flex:1;min-width:0"><div class="hq">${esc(h.query)}</div><div class="hm">${h.time}</div></div>
-          </div>`}).join('') : `<div class="es"><div class="big">📊</div><div style="font-size:12px">Run your first analysis</div></div>`}
+          </div>`}).join(''):`<div class="es"><div class="big">📊</div><div style="font-size:12px">Run your first analysis</div></div>`}
       </div>
     </div>
-    ${pn ? `<div class="card"><div class="ch"><div class="ct">⏳ Pending Predictions</div></div>${S.predictions.filter(p => p.result === 'pending').slice(0, 5).map((p, i) => {
-            const sp = SP.find(s => s.id === p.sport); const idx = S.predictions.indexOf(p); return `
-      <div class="pr" style="margin-bottom:4px"><span style="font-size:13px">${sp?.icon || '📊'}</span><div class="pp">${esc(p.pick)}</div>
+    ${pn?`<div class="card"><div class="ch"><div class="ct">⏳ Pending Predictions</div></div>${S.predictions.filter(p=>p.result==='pending').slice(0,5).map((p,i)=>{const sp=SP.find(s=>s.id===p.sport);const idx=S.predictions.indexOf(p);return `
+      <div class="pr" style="margin-bottom:4px"><span style="font-size:13px">${sp?.icon||'📊'}</span><div class="pp">${esc(p.pick)}</div>
         <button class="btn bsm" style="background:rgba(0,232,123,.12);color:var(--accent);border:none" onclick="markPred(${idx},'win')">✓</button>
         <button class="btn bsm" style="background:rgba(255,68,102,.12);color:var(--red);border:none" onclick="markPred(${idx},'loss')">✗</button>
-      </div>`}).join('')}</div>` : ''}`
-    }
+      </div>`}).join('')}</div>`:''}`}
 
-    function renderAnalyze() {
-      const sp = SP.find(s => s.id === S.sport); const pr = QP[S.mode]?.[S.sport] || []; const ml = MODES.find(m => m.id === S.mode)?.label || '';
-      return `
-    <div class="tabs">${MODES.map(m => `<button class="tab ${S.mode === m.id ? (m.id === 'pred' ? 'on pred-on' : 'on') : ''}" onclick="pickMode('${m.id}')">${m.icon} ${m.label}</button>`).join('')}</div>
+function renderAnalyze(){
+  const sp=SP.find(s=>s.id===S.sport);const pr=QP[S.mode]?.[S.sport]||[];const ml=MODES.find(m=>m.id===S.mode)?.label||'';
+  return `
+    <div class="tabs">${MODES.map(m=>`<button class="tab ${S.mode===m.id?(m.id==='pred'?'on pred-on':'on'):''}" onclick="pickMode('${m.id}')">${m.icon} ${m.label}</button>`).join('')}</div>
     <div class="card">
       <div class="ch">
-        <div class="ct">${sp.icon} ${ml} — ${sp.name}${S.team ? ` · ${S.team}` : ''}</div>
+        <div class="ct">${sp.icon} ${ml} — ${sp.name}${S.team?` · ${S.team}`:''}</div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
-          ${S.output && !S.loading ? `<button class="btn bs bsm" onclick="saveAn()">💾</button>${S.mode === 'pred' ? `<button class="btn bsm" style="background:rgba(168,85,247,.12);color:var(--purple);border:none" onclick="logPred()">🔮 Log</button>` : ''}<button class="btn bs bsm" onclick="toContent()">📝</button>` : ''}
-          ${S.loading ? `<button class="btn bd bsm" onclick="stopAn()">⏹ Stop</button>` : ''}
+          ${S.output&&!S.loading?`<button class="btn bs bsm" onclick="saveAn()">💾</button>${S.mode==='pred'?`<button class="btn bsm" style="background:rgba(168,85,247,.12);color:var(--purple);border:none" onclick="logPred()">🔮 Log</button>`:''}<button class="btn bs bsm" onclick="toContent()">📝</button>`:''}
+          ${S.loading?`<button class="btn bd bsm" onclick="stopAn()">⏹ Stop</button>`:''}
         </div>
       </div>
-      ${S.mode === 'pred' ? '<div class="pb">🔮 Predictions are entertainment analysis — not gambling advice.</div>' : ''}
-      <div class="qr">${pr.map(p => `<button class="qp" onclick="runQP(this.textContent)">${p}</button>`).join('')}</div>
+      ${S.mode==='pred'?'<div class="pb">🔮 Predictions are entertainment analysis — not gambling advice.</div>':''}
+      <div class="qr">${pr.map(p=>`<button class="qp" onclick="runQP(this.textContent)">${p}</button>`).join('')}</div>
       <div class="ir">
-        <input class="inp" id="qi" placeholder="${S.mode === 'pred' ? 'Predict…' : 'Analyze…'} ${sp.name}${S.team ? ' · ' + S.team : ''}…" onkeydown="if(event.key==='Enter')runQ()">
-        <button class="btn bp" onclick="runQ()" ${S.loading ? 'disabled' : ''} ${S.mode === 'pred' ? 'style="background:var(--purple)"' : ''}>${S.loading ? '⏳' : S.mode === 'pred' ? '🔮' : '⚡'} ${S.loading ? 'Working…' : S.mode === 'pred' ? 'Predict' : 'Analyze'}</button>
+        <input class="inp" id="qi" placeholder="${S.mode==='pred'?'Predict…':'Analyze…'} ${sp.name}${S.team?' · '+S.team:''}…" onkeydown="if(event.key==='Enter')runQ()">
+        <button class="btn bp" onclick="runQ()" ${S.loading?'disabled':''} ${S.mode==='pred'?'style="background:var(--purple)"':''}>${S.loading?'⏳':S.mode==='pred'?'🔮':'⚡'} ${S.loading?'Working…':S.mode==='pred'?'Predict':'Analyze'}</button>
       </div>
       <div id="ob"></div><div id="sb"></div>
     </div>`}
 
-    function renderTeams() {
-      const sp = SP.find(s => s.id === S.sport);
-      const teamPreds = {}; S.predictions.filter(p => p.sport === S.sport).forEach(p => { const t = p.team || 'Other'; if (!teamPreds[t]) teamPreds[t] = { w: 0, l: 0, p: 0 }; if (p.result === 'win') teamPreds[t].w++; else if (p.result === 'loss') teamPreds[t].l++; else teamPreds[t].p++ });
-      const teamAnalyses = {}; S.saved.filter(a => a.sport === S.sport).forEach(a => { (sp.teams || []).forEach(t => { if (a.query?.toLowerCase().includes(t.toLowerCase())) { if (!teamAnalyses[t]) teamAnalyses[t] = 0; teamAnalyses[t]++ } }) });
-      const isWatched = t => S.watchlist.some(w => w.sport === S.sport && w.team === t);
-      return `
+function renderTeams(){
+  const sp=SP.find(s=>s.id===S.sport);
+  const teamPreds={};S.predictions.filter(p=>p.sport===S.sport).forEach(p=>{const t=p.team||'Other';if(!teamPreds[t])teamPreds[t]={w:0,l:0,p:0};if(p.result==='win')teamPreds[t].w++;else if(p.result==='loss')teamPreds[t].l++;else teamPreds[t].p++});
+  const teamAnalyses={};S.saved.filter(a=>a.sport===S.sport).forEach(a=>{(sp.teams||[]).forEach(t=>{if(a.query?.toLowerCase().includes(t.toLowerCase())){if(!teamAnalyses[t])teamAnalyses[t]=0;teamAnalyses[t]++}})});
+  const isWatched=t=>S.watchlist.some(w=>w.sport===S.sport&&w.team===t);
+  return `
     <div class="ch"><div class="ct" style="font-size:18px">🏟️ ${sp.icon} ${sp.name} — Team Hub</div></div>
     <div style="display:flex;flex-wrap:wrap;gap:8px">
-      ${(sp.teams || []).map(t => `<div class="team-card ${S.team === t ? 'active' : ''}" onclick="selectTeam('${t.replace(/'/g, "\\'")}')">
+      ${(sp.teams||[]).map(t=>`<div class="team-card ${S.team===t?'active':''}" onclick="selectTeam('${t.replace(/'/g,"\\'")}')">
         <div style="font-size:11px;font-weight:700">${esc(t)}</div>
-        ${teamPreds[t] ? `<div style="font-size:10px;color:var(--text-3);margin-top:2px">${teamPreds[t].w}W–${teamPreds[t].l}L</div>` : ''}
-        ${isWatched(t) ? '<div style="font-size:9px;color:var(--accent);margin-top:2px">👁️ watching</div>' : ''}
+        ${teamPreds[t]?`<div style="font-size:10px;color:var(--text-3);margin-top:2px">${teamPreds[t].w}W–${teamPreds[t].l}L</div>`:''}
+        ${isWatched(t)?'<div style="font-size:9px;color:var(--accent);margin-top:2px">👁️ watching</div>':''}
       </div>`).join('')}
     </div>
-    ${S.team ? `<div class="card">
+    ${S.team?`<div class="card">
       <div class="ch"><div class="ct">${sp.icon} ${S.team}</div>
         <div style="display:flex;gap:4px">
-          <button class="btn bp bsm" onclick="analyzeTeam('${S.sport}','${S.team.replace(/'/g, "\\'")}')">⚡ Analyze</button>
-          ${isWatched(S.team) ? `<button class="btn bd bsm" onclick="unwatchTeam('${S.team.replace(/'/g, "\\'")}')">Remove Watch</button>` : `<button class="btn bs bsm" onclick="watchTeam('${S.team.replace(/'/g, "\\'")}')">👁️ Watch</button>`}
+          <button class="btn bp bsm" onclick="analyzeTeam('${S.sport}','${S.team.replace(/'/g,"\\'")}')">⚡ Analyze</button>
+          ${isWatched(S.team)?`<button class="btn bd bsm" onclick="unwatchTeam('${S.team.replace(/'/g,"\\'")}')">Remove Watch</button>`:`<button class="btn bs bsm" onclick="watchTeam('${S.team.replace(/'/g,"\\'")}')">👁️ Watch</button>`}
         </div>
       </div>
       <div class="g3">
-        <div class="sc"><div class="sl">Analyses</div><div class="sv">${teamAnalyses[S.team] || 0}</div></div>
-        <div class="sc"><div class="sl">Predictions</div><div class="sv">${teamPreds[S.team] ? (teamPreds[S.team].w + teamPreds[S.team].l + teamPreds[S.team].p) : 0}</div></div>
-        <div class="sc"><div class="sl">Record</div><div class="sv" style="font-size:18px">${teamPreds[S.team] ? `<span style="color:var(--accent)">${teamPreds[S.team].w}W</span>–<span style="color:var(--red)">${teamPreds[S.team].l}L</span>` : '—'}</div></div>
+        <div class="sc"><div class="sl">Analyses</div><div class="sv">${teamAnalyses[S.team]||0}</div></div>
+        <div class="sc"><div class="sl">Predictions</div><div class="sv">${teamPreds[S.team]?(teamPreds[S.team].w+teamPreds[S.team].l+teamPreds[S.team].p):0}</div></div>
+        <div class="sc"><div class="sl">Record</div><div class="sv" style="font-size:18px">${teamPreds[S.team]?`<span style="color:var(--accent)">${teamPreds[S.team].w}W</span>–<span style="color:var(--red)">${teamPreds[S.team].l}L</span>`:'—'}</div></div>
       </div>
-      ${S.saved.filter(a => a.sport === S.sport && a.query?.toLowerCase().includes(S.team.toLowerCase())).length ? `
+      ${S.saved.filter(a=>a.sport===S.sport&&a.query?.toLowerCase().includes(S.team.toLowerCase())).length?`
         <div class="ct" style="margin:12px 0 8px;font-size:13px">Recent Analyses</div>
-        ${S.saved.filter(a => a.sport === S.sport && a.query?.toLowerCase().includes(S.team.toLowerCase())).slice(-3).reverse().map((a, i) => `
+        ${S.saved.filter(a=>a.sport===S.sport&&a.query?.toLowerCase().includes(S.team.toLowerCase())).slice(-3).reverse().map((a,i)=>`
           <div class="fi" onclick="loadSaved2(${S.saved.indexOf(a)})" style="padding:6px;margin-bottom:4px"><div style="flex:1;min-width:0"><div class="hq">${esc(a.query)}</div><div class="hm">${new Date(a.savedAt).toLocaleDateString()}</div></div></div>
-        `).join('')}` : ''}
-    </div>`: ''}`
-    }
+        `).join('')}`:''}
+    </div>`:''}`}
 
-    function renderPredictions() {
-      const w = S.predictions.filter(p => p.result === 'win').length, l = S.predictions.filter(p => p.result === 'loss').length, pn = S.predictions.filter(p => p.result === 'pending').length;
-      const pct = (w + l) ? Math.round(w / (w + l) * 100) : 0;
-      const bySport = {}; S.predictions.forEach(p => { if (!bySport[p.sport]) bySport[p.sport] = { w: 0, l: 0, p: 0 }; if (p.result === 'win') bySport[p.sport].w++; else if (p.result === 'loss') bySport[p.sport].l++; else bySport[p.sport].p++ });
-      return `
+function renderPredictions(){
+  const w=S.predictions.filter(p=>p.result==='win').length,l=S.predictions.filter(p=>p.result==='loss').length,pn=S.predictions.filter(p=>p.result==='pending').length;
+  const pct=(w+l)?Math.round(w/(w+l)*100):0;
+  const bySport={};S.predictions.forEach(p=>{if(!bySport[p.sport])bySport[p.sport]={w:0,l:0,p:0};if(p.result==='win')bySport[p.sport].w++;else if(p.result==='loss')bySport[p.sport].l++;else bySport[p.sport].p++});
+  return `
     <div class="ct" style="font-size:18px">🔮 Prediction Tracker</div>
     <div class="g4">
       <div class="sc"><div class="sl">Total</div><div class="sv">${S.predictions.length}</div></div>
-      <div class="sc"><div class="sl">Accuracy</div><div class="sv" style="color:${pct >= 60 ? 'var(--accent)' : pct >= 40 ? 'var(--orange)' : 'var(--red)'}">${pct ? pct + '%' : '—'}</div></div>
+      <div class="sc"><div class="sl">Accuracy</div><div class="sv" style="color:${pct>=60?'var(--accent)':pct>=40?'var(--orange)':'var(--red)'}">${pct?pct+'%':'—'}</div></div>
       <div class="sc"><div class="sl">Record</div><div class="sv" style="font-size:18px"><span style="color:var(--accent)">${w}W</span>–<span style="color:var(--red)">${l}L</span></div></div>
       <div class="sc"><div class="sl">Pending</div><div class="sv" style="color:var(--orange)">${pn}</div></div>
     </div>
-    ${Object.keys(bySport).length ? `<div class="card"><div class="ct" style="margin-bottom:10px">By Sport</div><div class="g3">${Object.entries(bySport).map(([sid, r]) => { const sp = SP.find(s => s.id === sid); const p2 = (r.w + r.l) ? Math.round(r.w / (r.w + r.l) * 100) : 0; return `<div class="sc" style="text-align:center"><div style="font-size:18px">${sp?.icon || '📊'}</div><div style="font:700 12px 'Space Grotesk',sans-serif;margin-top:2px">${sp?.name || sid}</div><div style="font-size:11px;color:var(--text-2);margin-top:2px">${r.w}W–${r.l}L</div><div style="font:700 16px 'Space Grotesk',sans-serif;color:${p2 >= 60 ? 'var(--accent)' : p2 >= 40 ? 'var(--orange)' : 'var(--red)'}; margin-top:2px">${p2 ? p2 + '%' : '—'}</div></div>` }).join('')}</div></div>` : ''}
+    ${Object.keys(bySport).length?`<div class="card"><div class="ct" style="margin-bottom:10px">By Sport</div><div class="g3">${Object.entries(bySport).map(([sid,r])=>{const sp=SP.find(s=>s.id===sid);const p2=(r.w+r.l)?Math.round(r.w/(r.w+r.l)*100):0;return `<div class="sc" style="text-align:center"><div style="font-size:18px">${sp?.icon||'📊'}</div><div style="font:700 12px 'Space Grotesk',sans-serif;margin-top:2px">${sp?.name||sid}</div><div style="font-size:11px;color:var(--text-2);margin-top:2px">${r.w}W–${r.l}L</div><div style="font:700 16px 'Space Grotesk',sans-serif;color:${p2>=60?'var(--accent)':p2>=40?'var(--orange)':'var(--red)'}; margin-top:2px">${p2?p2+'%':'—'}</div></div>`}).join('')}</div></div>`:''}
     <div class="card"><div class="ch"><div class="ct">All Predictions</div><button class="btn bp bsm" onclick="S.mode='pred';go('analyze')">+ New</button></div>
-    ${S.predictions.length ? `<div style="display:flex;flex-direction:column;gap:4px">${[...S.predictions].reverse().map((p, ri) => {
-        const idx = S.predictions.length - 1 - ri; const sp = SP.find(s => s.id === p.sport); return `
-      <div class="pr"><span style="font-size:13px">${sp?.icon || '📊'}</span><div class="pp">${esc(p.pick)}</div><span style="font-size:9px;color:var(--text-3)">${p.date || ''}</span>
-        ${p.result === 'pending' ? `<button class="btn bsm" style="background:rgba(0,232,123,.12);color:var(--accent);border:none" onclick="markPred(${idx},'win')">✓</button><button class="btn bsm" style="background:rgba(255,68,102,.12);color:var(--red);border:none" onclick="markPred(${idx},'loss')">✗</button>` : `<div class="pt ${p.result === 'win' ? 'pw2' : 'pl'}">${p.result === 'win' ? 'WIN' : 'LOSS'}</div>`}
+    ${S.predictions.length?`<div style="display:flex;flex-direction:column;gap:4px">${[...S.predictions].reverse().map((p,ri)=>{const idx=S.predictions.length-1-ri;const sp=SP.find(s=>s.id===p.sport);return `
+      <div class="pr"><span style="font-size:13px">${sp?.icon||'📊'}</span><div class="pp">${esc(p.pick)}</div><span style="font-size:9px;color:var(--text-3)">${p.date||''}</span>
+        ${p.result==='pending'?`<button class="btn bsm" style="background:rgba(0,232,123,.12);color:var(--accent);border:none" onclick="markPred(${idx},'win')">✓</button><button class="btn bsm" style="background:rgba(255,68,102,.12);color:var(--red);border:none" onclick="markPred(${idx},'loss')">✗</button>`:`<div class="pt ${p.result==='win'?'pw2':'pl'}">${p.result==='win'?'WIN':'LOSS'}</div>`}
         <button class="btn bsm bd" style="padding:2px 5px;font-size:9px" onclick="delPred(${idx})">✕</button>
-      </div>`}).join('')}</div>` : `<div class="es"><div class="big">🔮</div><div style="font-size:12px">No predictions yet</div></div>`}</div>`
-    }
+      </div>`}).join('')}</div>`:`<div class="es"><div class="big">🔮</div><div style="font-size:12px">No predictions yet</div></div>`}</div>`}
 
-    function renderLeaderboard() {
-      const myW = S.predictions.filter(p => p.result === 'win').length, myL = S.predictions.filter(p => p.result === 'loss').length;
-      const myPct = (myW + myL) ? Math.round(myW / (myW + myL) * 100) : 0;
-      const board = S.leaderboard.length ? S.leaderboard : [{ name: myName, wins: myW, losses: myL, pct: myPct, total: S.predictions.length }];
-      return `
+function renderLeaderboard(){
+  const myW=S.predictions.filter(p=>p.result==='win').length,myL=S.predictions.filter(p=>p.result==='loss').length;
+  const myPct=(myW+myL)?Math.round(myW/(myW+myL)*100):0;
+  const board=S.leaderboard.length?S.leaderboard:[{name:myName,wins:myW,losses:myL,pct:myPct,total:S.predictions.length}];
+  return `
     <div class="ct" style="font-size:18px">🏆 Prediction Leaderboard</div>
     <div class="card" style="background:linear-gradient(135deg,rgba(0,232,123,.05),rgba(168,85,247,.05));border-color:var(--accent)">
       <div style="text-align:center;padding:10px 0">
         <div style="font-size:32px">🏆</div>
         <div class="ct" style="font-size:16px;margin-top:4px">${esc(myName)}</div>
-        <div style="font:700 32px 'Space Grotesk',sans-serif;color:var(--accent);margin-top:4px">${myPct ? myPct + '%' : '—'}</div>
+        <div style="font:700 32px 'Space Grotesk',sans-serif;color:var(--accent);margin-top:4px">${myPct?myPct+'%':'—'}</div>
         <div style="font-size:12px;color:var(--text-2);margin-top:2px">${myW}W – ${myL}L · ${S.predictions.length} total predictions</div>
       </div>
     </div>
     <div class="card"><div class="ct" style="margin-bottom:10px">Rankings</div>
       <div style="display:flex;flex-direction:column;gap:6px">
-        ${board.map((e, i) => `<div class="lb-row">
-          <div class="lb-rank" style="color:${i === 0 ? 'var(--gold)' : i === 1 ? 'var(--text-2)' : i === 2 ? 'var(--orange)' : 'var(--text-3)'}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</div>
-          <div class="lb-name">${esc(e.name || 'Analyst')}</div>
-          <div style="font-size:11px;color:var(--text-3)">${e.wins || 0}W–${e.losses || 0}L</div>
-          <div class="lb-stat" style="color:${(e.pct || 0) >= 60 ? 'var(--accent)' : (e.pct || 0) >= 40 ? 'var(--orange)' : 'var(--red)'}">${e.pct || 0}%</div>
+        ${board.map((e,i)=>`<div class="lb-row">
+          <div class="lb-rank" style="color:${i===0?'var(--gold)':i===1?'var(--text-2)':i===2?'var(--orange)':'var(--text-3)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+          <div class="lb-name">${esc(e.name||'Analyst')}</div>
+          <div style="font-size:11px;color:var(--text-3)">${e.wins||0}W–${e.losses||0}L</div>
+          <div class="lb-stat" style="color:${(e.pct||0)>=60?'var(--accent)':(e.pct||0)>=40?'var(--orange)':'var(--red)'}">${e.pct||0}%</div>
         </div>`).join('')}
       </div>
     </div>
     <div style="font-size:11px;color:var(--text-3);text-align:center">Share the app to compete with other FMFO analysts</div>`}
 
-    function renderWatchlist() {
-      return `
+function renderWatchlist(){
+  return `
     <div class="ch"><div class="ct" style="font-size:18px">👁️ Watchlist</div><button class="btn bp bsm" onclick="addWatch()">+ Add Team</button></div>
     <div style="font-size:12px;color:var(--text-2);margin-bottom:8px">Track teams and get analysis alerts when you open the app.</div>
-    ${S.watchlist.length ? `<div style="display:flex;flex-direction:column;gap:6px">
-      ${S.watchlist.map((w, i) => {
-        const sp = SP.find(s => s.id === w.sport); return `
+    ${S.watchlist.length?`<div style="display:flex;flex-direction:column;gap:6px">
+      ${S.watchlist.map((w,i)=>{const sp=SP.find(s=>s.id===w.sport);return `
         <div class="wl-item">
-          <div class="hb" style="background:${sp?.c || '#333'}18;font-size:12px">${sp?.icon || '📊'}</div>
+          <div class="hb" style="background:${sp?.c||'#333'}18;font-size:12px">${sp?.icon||'📊'}</div>
           <div style="flex:1"><div style="font:600 13px 'Inter',sans-serif">${esc(w.team)}</div><div style="font-size:10px;color:var(--text-3)">${sp?.name}</div></div>
-          <button class="btn bp bsm" onclick="analyzeTeam('${w.sport}','${w.team.replace(/'/g, "\\'")}')">⚡</button>
+          <button class="btn bp bsm" onclick="analyzeTeam('${w.sport}','${w.team.replace(/'/g,"\\'")}')">⚡</button>
           <button class="btn bd bsm" onclick="removeWatch(${i})">✕</button>
         </div>`}).join('')}
-    </div>`: `<div class="es"><div class="big">👁️</div><div style="font-size:12px">Your watchlist is empty. Add teams from the Team Hub or click + above.</div></div>`}
-    ${S.watchlist.length ? `<div class="card" style="margin-top:12px"><div class="ch"><div class="ct">Morning Brief</div></div>
+    </div>`:`<div class="es"><div class="big">👁️</div><div style="font-size:12px">Your watchlist is empty. Add teams from the Team Hub or click + above.</div></div>`}
+    ${S.watchlist.length?`<div class="card" style="margin-top:12px"><div class="ch"><div class="ct">Morning Brief</div></div>
       <div style="font-size:12px;color:var(--text-2);margin-bottom:8px">Generate a full briefing for all your watched teams.</div>
       <button class="btn bp" onclick="morningBrief()">📋 Generate Watchlist Brief</button>
       <div id="briefOut"></div>
-    </div>`: ''}`
-    }
+    </div>`:''}`}
 
-    function renderContent() {
-      return `
+function renderContent(){
+  return `
     <div class="ct" style="font-size:18px">📝 Content Creator</div>
     <div style="font-size:12px;color:var(--text-2);margin-bottom:6px">Turn analyses into fan-facing content for FMFO.</div>
     <div class="card"><div class="ch"><div class="ct">From Saved Analysis</div></div>
-      ${S.saved.length ? `<div style="display:flex;flex-direction:column;gap:4px">${S.saved.slice(-6).reverse().map((s, i) => {
-        const sp = SP.find(x => x.id === s.sport); return `
-        <div class="fi" onclick="genContent(${S.saved.length - 1 - i})" style="padding:6px"><div class="hb" style="background:${sp?.c || '#333'}18;font-size:12px">${sp?.icon || '📊'}</div><div style="flex:1;min-width:0"><div class="hq">${esc(s.query)}</div></div></div>`
-      }).join('')}</div>` : `<div class="es"><div class="big">📚</div><div style="font-size:12px">Save analyses first</div></div>`}
+      ${S.saved.length?`<div style="display:flex;flex-direction:column;gap:4px">${S.saved.slice(-6).reverse().map((s,i)=>{const sp=SP.find(x=>x.id===s.sport);return `
+        <div class="fi" onclick="genContent(${S.saved.length-1-i})" style="padding:6px"><div class="hb" style="background:${sp?.c||'#333'}18;font-size:12px">${sp?.icon||'📊'}</div><div style="flex:1;min-width:0"><div class="hq">${esc(s.query)}</div></div></div>`}).join('')}</div>`:`<div class="es"><div class="big">📚</div><div style="font-size:12px">Save analyses first</div></div>`}
     </div>
     <div class="card"><div class="ct" style="margin-bottom:8px">Custom Content</div>
       <div class="ir"><input class="inp" id="cq" placeholder="e.g. Hot take thread about tonight's NBA games…" onkeydown="if(event.key==='Enter')genCustom()"><button class="btn bp" onclick="genCustom()">⚡</button></div>
       <div id="co"></div>
     </div>
-    ${S.contentDraft ? `<div class="card"><div class="ch"><div class="ct">Draft</div><div style="display:flex;gap:4px"><button class="btn bp bsm" onclick="copyDraft()">📋 Copy</button><button class="btn bs bsm" onclick="S.contentDraft='';render()">Clear</button></div></div>
-      <div class="cp">${esc(S.contentDraft)}</div></div>` : ''}`
-    }
+    ${S.contentDraft?`<div class="card"><div class="ch"><div class="ct">Draft</div><div style="display:flex;gap:4px"><button class="btn bp bsm" onclick="copyDraft()">📋 Copy</button><button class="btn bs bsm" onclick="S.contentDraft='';render()">Clear</button></div></div>
+      <div class="cp">${esc(S.contentDraft)}</div></div>`:''}`}
 
-    function renderLibrary() {
-      return `
+function renderLibrary(){
+  return `
     <div class="ch"><div class="ct" style="font-size:18px">📚 Library</div><div style="font-size:11px;color:var(--text-2)">${S.saved.length} saved · ${S.history.length} session</div></div>
-    ${S.saved.length ? `<div class="card"><div class="ct" style="margin-bottom:10px">Saved</div><div style="display:flex;flex-direction:column;gap:4px">
-      ${[...S.saved].reverse().map((s, ri) => {
-        const idx = S.saved.length - 1 - ri; const sp = SP.find(x => x.id === s.sport); return `
-        <div class="fi" onclick="loadSaved2(${idx})"><div class="hb" style="background:${sp?.c || '#333'}18;font-size:12px">${sp?.icon || '📊'}</div>
-        <div style="flex:1;min-width:0"><div class="hq">${esc(s.query)}</div><div class="hm">${sp?.name} · ${s.savedAt ? new Date(s.savedAt).toLocaleDateString() : ''}</div></div>
-        <button class="btn bsm bd" style="padding:2px 5px;font-size:9px" onclick="event.stopPropagation();delSaved(${idx})">✕</button></div>`
-      }).join('')}
-    </div></div>`: ''}
-    ${S.history.length ? `<div class="card"><div class="ct" style="margin-bottom:10px">Session</div><div style="display:flex;flex-direction:column;gap:4px">
-      ${[...S.history].reverse().map((h, ri) => {
-        const idx = S.history.length - 1 - ri; const sp = SP.find(s => s.id === h.sport); return `
-        <div class="fi" onclick="viewHist(${idx})"><div class="hb" style="background:${sp?.c || '#333'}18;font-size:12px">${sp?.icon || '📊'}</div>
-        <div style="flex:1;min-width:0"><div class="hq">${esc(h.query)}</div><div class="hm">${h.mode} · ${h.time}</div></div></div>`
-      }).join('')}
-    </div></div>`: ''}`
-    }
+    ${S.saved.length?`<div class="card"><div class="ct" style="margin-bottom:10px">Saved</div><div style="display:flex;flex-direction:column;gap:4px">
+      ${[...S.saved].reverse().map((s,ri)=>{const idx=S.saved.length-1-ri;const sp=SP.find(x=>x.id===s.sport);return `
+        <div class="fi" onclick="loadSaved2(${idx})"><div class="hb" style="background:${sp?.c||'#333'}18;font-size:12px">${sp?.icon||'📊'}</div>
+        <div style="flex:1;min-width:0"><div class="hq">${esc(s.query)}</div><div class="hm">${sp?.name} · ${s.savedAt?new Date(s.savedAt).toLocaleDateString():''}</div></div>
+        <button class="btn bsm bd" style="padding:2px 5px;font-size:9px" onclick="event.stopPropagation();delSaved(${idx})">✕</button></div>`}).join('')}
+    </div></div>`:''}
+    ${S.history.length?`<div class="card"><div class="ct" style="margin-bottom:10px">Session</div><div style="display:flex;flex-direction:column;gap:4px">
+      ${[...S.history].reverse().map((h,ri)=>{const idx=S.history.length-1-ri;const sp=SP.find(s=>s.id===h.sport);return `
+        <div class="fi" onclick="viewHist(${idx})"><div class="hb" style="background:${sp?.c||'#333'}18;font-size:12px">${sp?.icon||'📊'}</div>
+        <div style="flex:1;min-width:0"><div class="hq">${esc(h.query)}</div><div class="hm">${h.mode} · ${h.time}</div></div></div>`}).join('')}
+    </div></div>`:''}`}
 
-    function renderOutput() { const b = document.getElementById('ob'); if (!b) return; if (S.loading && !S.output) b.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Generating…</div>`; else if (S.output) b.innerHTML = `<div class="out">${esc(S.output)}</div>`; else b.innerHTML = `<div class="out empty">Select a prompt or ask a question.</div>` }
-    function renderStatus() { const b = document.getElementById('sb'); if (b) b.innerHTML = `<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3);padding:3px 0"><div class="dot ${aiReady ? 'dg' : 'dr'}"></div>AI ${aiReady ? 'Online' : 'Offline'} · <div class="dot ${dbReady ? 'dg' : 'dy'}"></div>${dbReady ? 'Synced' : 'Local'}</div>` }
+function renderOutput(){const b=document.getElementById('ob');if(!b)return;if(S.loading&&!S.output)b.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Generating…</div>`;else if(S.output)b.innerHTML=`<div class="out">${esc(S.output)}</div>`;else b.innerHTML=`<div class="out empty">Select a prompt or ask a question.</div>`}
+function renderStatus(){const b=document.getElementById('sb');if(b)b.innerHTML=`<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3);padding:3px 0"><div class="dot ${aiReady?'dg':'dr'}"></div>AI ${aiReady?'Online':'Offline'} · <div class="dot ${dbReady?'dg':'dy'}"></div>${dbReady?'Synced':'Local'}</div>`}
 
-    // NAV
-    function go(p) { S.page = p; S.output = ''; render(); document.getElementById('side')?.classList.remove('open') }
-    function pickSport(id) { S.sport = id; S.team = null; S.page = 'analyze'; S.output = ''; render(); document.getElementById('side')?.classList.remove('open') }
-    function pickMode(id) { S.mode = id; S.output = ''; renderMain() }
-    function selectTeam(t) { S.team = S.team === t ? null : t; renderMain() }
-    function analyzeTeam(sport, team) { S.sport = sport; S.team = team; S.page = 'analyze'; S.output = ''; render(); setTimeout(() => { const inp = document.getElementById('qi'); if (inp) inp.value = `${team} analysis and outlook` }, 50) }
-    function runQP(t) { document.getElementById('qi').value = t; runQ() }
+// NAV
+function go(p){S.page=p;S.output='';render();document.getElementById('side')?.classList.remove('open')}
+function pickSport(id){S.sport=id;S.team=null;S.page='analyze';S.output='';render();document.getElementById('side')?.classList.remove('open')}
+function pickMode(id){S.mode=id;S.output='';renderMain()}
+function selectTeam(t){S.team=S.team===t?null:t;renderMain()}
+function analyzeTeam(sport,team){S.sport=sport;S.team=team;S.page='analyze';S.output='';render();setTimeout(()=>{const inp=document.getElementById('qi');if(inp)inp.value=`${team} analysis and outlook`},50)}
+function runQP(t){document.getElementById('qi').value=t;runQ()}
 
-    // ANALYZE
-    async function runQ() {
-      const inp = document.getElementById('qi'); const q = inp?.value?.trim(); if (!q || S.loading) return;
-      S.loading = true; S.output = ''; renderMain(); if (inp) inp.value = q;
-      const sp = SP.find(s => s.id === S.sport); const ml = MODES.find(m => m.id === S.mode)?.label || '';
-      if (aiReady) {
-        ctl = new AbortController();
-        const prompt = `You are the FMFO Sports AI Analyst powering the FMFO Sports Commentator Analytics Control Room by FMFO Technologies Inc. (For My Fans Only). Expert-level sports analysis for commentators.\n\nSport: ${sp.name}\nMode: ${ml}\n${S.team ? 'Team focus: ' + S.team + '\n' : ''}Date: ${new Date().toLocaleDateString()}\n\nGuidelines:\n- Lead with the most impactful insight\n- Use specific stats and historical context\n- Provide narrative angles for broadcast\n- Format with clear sections\n${S.mode === 'pre' ? '- Focus: matchups, trends, storylines, stats for on-air' : ''}${S.mode === 'live' ? '- Focus: momentum, adjustments, what to watch' : ''}${S.mode === 'post' ? '- Focus: narrative recap, what happened and why' : ''}${S.mode === 'pred' ? '- Focus: PREDICTIONS — bold data-backed picks\n- Each prediction: pick, confidence %, 2-3 data points, one risk\n- Be decisive, commit to picks\n- Include LOCK OF THE DAY and SLEEPER PICK\n- Label as entertainment, not gambling advice' : ''}\n\nEnd with:\n${S.mode === 'pred' ? '🔮 PREDICTION CONFIDENCE SUMMARY: picks with %\n📌 COMMENTATOR TALKING POINT' : '📌 COMMENTATOR TALKING POINT: punchy angle for on-air'}\n\nAnalyze: ${q}`;
-        try { const r = await FMFO.streamAnalysis(prompt, { signal: ctl.signal, onText: ({ text }) => { S.output = text; const b = document.getElementById('ob'); if (b) b.innerHTML = `<div class="out">${esc(text)}</div>` } }); S.output = r.text } catch (e) { if (e.code === 'cancelled') S.output = S.output || '(Stopped)'; else if (e.code === 'not_granted') { S.output = '⚠️ Allow AI when prompted.'; aiReady = false } else if (e.code === 'rate_limited') S.output = (e.text || '') + '\n\n⚠️ Rate limited.'; else S.output = (e.text || '') + `\n\n⚠️ ${e.message || 'Failed.'}` }
-      } else { S.output = `━━━ FMFO SPORTS ━━━\n${sp.icon} ${sp.name}${S.team ? ' · ' + S.team : ''} — ${ml}\n\nQuery: "${q}"\n\n⚠️ AI offline. Server is starting up — try again in a moment.\n\n— formyfansonly.com` }
-      S.loading = false; ctl = null; S.history.push({ query: q, sport: S.sport, team: S.team, mode: ml, time: new Date().toLocaleTimeString(), output: S.output });
-      renderMain(); if (inp) inp.value = q; renderSide()
-    }
-    function stopAn() { if (ctl) ctl.abort() }
+// ANALYZE
+async function runQ(){
+  const inp=document.getElementById('qi');const q=inp?.value?.trim();if(!q||S.loading)return;
+  S.loading=true;S.output='';renderMain();if(inp)inp.value=q;
+  const sp=SP.find(s=>s.id===S.sport);const ml=MODES.find(m=>m.id===S.mode)?.label||'';
+  if(aiReady){
+    ctl=new AbortController();
+    const prompt=`You are the FMFO Sports AI Analyst powering the FMFO Sports Commentator Analytics Control Room by FMFO Technologies Inc. (For My Fans Only). Expert-level sports analysis for commentators.\n\nSport: ${sp.name}\nMode: ${ml}\n${S.team?'Team focus: '+S.team+'\n':''}Date: ${new Date().toLocaleDateString()}\n\nGuidelines:\n- Lead with the most impactful insight\n- Use specific stats and historical context\n- Provide narrative angles for broadcast\n- Format with clear sections\n${S.mode==='pre'?'- Focus: matchups, trends, storylines, stats for on-air':''}${S.mode==='live'?'- Focus: momentum, adjustments, what to watch':''}${S.mode==='post'?'- Focus: narrative recap, what happened and why':''}${S.mode==='pred'?'- Focus: PREDICTIONS — bold data-backed picks\n- Each prediction: pick, confidence %, 2-3 data points, one risk\n- Be decisive, commit to picks\n- Include LOCK OF THE DAY and SLEEPER PICK\n- Label as entertainment, not gambling advice':''}\n\nEnd with:\n${S.mode==='pred'?'🔮 PREDICTION CONFIDENCE SUMMARY: picks with %\n📌 COMMENTATOR TALKING POINT':'📌 COMMENTATOR TALKING POINT: punchy angle for on-air'}\n\nAnalyze: ${q}`;
+    try{const r=await FMFO.streamAnalysis(prompt,{signal:ctl.signal,onText:({text})=>{S.output=text;const b=document.getElementById('ob');if(b)b.innerHTML=`<div class="out">${esc(text)}</div>`}});S.output=r.text}catch(e){if(e.code==='cancelled')S.output=S.output||'(Stopped)';else if(e.code==='not_granted'){S.output='⚠️ Allow AI when prompted.';aiReady=false}else if(e.code==='rate_limited')S.output=(e.text||'')+'\n\n⚠️ Rate limited.';else S.output=(e.text||'')+`\n\n⚠️ ${e.message||'Failed.'}`}
+  }else{S.output=`━━━ FMFO SPORTS ━━━\n${sp.icon} ${sp.name}${S.team?' · '+S.team:''} — ${ml}\n\nQuery: "${q}"\n\n⚠️ AI offline. Server is starting up — try again in a moment.\n\n— formyfansonly.com`}
+  S.loading=false;ctl=null;S.history.push({query:q,sport:S.sport,team:S.team,mode:ml,time:new Date().toLocaleTimeString(),output:S.output});
+  renderMain();if(inp)inp.value=q;renderSide()}
+function stopAn(){if(ctl)ctl.abort()}
 
-    // SAVE
-    async function saveAn() {
-      const q = S.history[S.history.length - 1]?.query || 'Analysis';
-      const entry = { query: q, sport: S.sport, team: S.team, tab: S.mode, output: S.output, savedAt: new Date().toISOString() };
-      S.saved.push(entry); const ref = await dbSave('analyses', entry); if (ref) S.saved[S.saved.length - 1]._id = ref.id; render()
-    }
-    function loadSaved2(i) { const s = S.saved[i]; if (!s) return; S.sport = s.sport || S.sport; S.mode = s.tab || S.mode; S.team = s.team || null; S.output = s.output || ''; S.page = 'analyze'; render() }
-    async function delSaved(i) { const it = S.saved.splice(i, 1)[0]; if (it?._id) await dbDel('analyses', it._id); render() }
-    function viewHist(i) { const h = S.history[i]; if (!h) return; S.sport = h.sport; S.team = h.team || null; S.mode = h.mode === 'Pre-Game Intel' ? 'pre' : h.mode === 'Live Analysis' ? 'live' : h.mode === 'Post-Game Review' ? 'post' : h.mode === 'Predictions' ? 'pred' : 'pre'; S.output = h.output; S.page = 'analyze'; render() }
+// SAVE
+async function saveAn(){
+  const q=S.history[S.history.length-1]?.query||'Analysis';
+  const entry={query:q,sport:S.sport,team:S.team,tab:S.mode,output:S.output,savedAt:new Date().toISOString()};
+  S.saved.push(entry);const ref=await dbSave('analyses',entry);if(ref)S.saved[S.saved.length-1]._id=ref.id;render()}
+function loadSaved2(i){const s=S.saved[i];if(!s)return;S.sport=s.sport||S.sport;S.mode=s.tab||S.mode;S.team=s.team||null;S.output=s.output||'';S.page='analyze';render()}
+async function delSaved(i){const it=S.saved.splice(i,1)[0];if(it?._id)await dbDel('analyses',it._id);render()}
+function viewHist(i){const h=S.history[i];if(!h)return;S.sport=h.sport;S.team=h.team||null;S.mode=h.mode==='Pre-Game Intel'?'pre':h.mode==='Live Analysis'?'live':h.mode==='Post-Game Review'?'post':h.mode==='Predictions'?'pred':'pre';S.output=h.output;S.page='analyze';render()}
 
-    // PREDICTIONS
-    function logPred() { const pick = prompt('Enter your prediction pick:'); if (!pick) return; const entry = { pick, sport: S.sport, team: S.team, date: new Date().toLocaleDateString(), result: 'pending' }; S.predictions.push(entry); dbSave('predictions', entry).then(r => { if (r) S.predictions[S.predictions.length - 1]._id = r.id; updateMyLeaderboard() }); render() }
-    async function markPred(i, result) { S.predictions[i].result = result; if (S.predictions[i]._id) await dbUp('predictions', S.predictions[i]._id, { result }); updateMyLeaderboard(); render() }
-    async function delPred(i) { const it = S.predictions.splice(i, 1)[0]; if (it?._id) await dbDel('predictions', it._id); updateMyLeaderboard(); render() }
+// PREDICTIONS
+function logPred(){const pick=prompt('Enter your prediction pick:');if(!pick)return;const entry={pick,sport:S.sport,team:S.team,date:new Date().toLocaleDateString(),result:'pending'};S.predictions.push(entry);dbSave('predictions',entry).then(r=>{if(r)S.predictions[S.predictions.length-1]._id=r.id;updateMyLeaderboard()});render()}
+async function markPred(i,result){S.predictions[i].result=result;if(S.predictions[i]._id)await dbUp('predictions',S.predictions[i]._id,{result});updateMyLeaderboard();render()}
+async function delPred(i){const it=S.predictions.splice(i,1)[0];if(it?._id)await dbDel('predictions',it._id);updateMyLeaderboard();render()}
 
-    // WATCHLIST
-    function addWatch() {
-      const sp = SP.find(s => s.id === S.sport);
-      const teams = sp?.teams || []; if (!teams.length) { alert('Select a sport with teams first'); return }
-      const team = prompt(`Add a ${sp.name} team to your watchlist:\n\n${teams.join(', ')}`);
-      if (!team) return;
-      if (S.watchlist.some(w => w.sport === S.sport && w.team.toLowerCase() === team.toLowerCase())) return;
-      const entry = { sport: S.sport, team }; S.watchlist.push(entry); dbSave('watchlist', entry).then(r => { if (r) S.watchlist[S.watchlist.length - 1]._id = r.id }); checkAlerts(); render()
-    }
-    function watchTeam(t) {
-      if (S.watchlist.some(w => w.sport === S.sport && w.team === t)) return;
-      const entry = { sport: S.sport, team: t }; S.watchlist.push(entry); dbSave('watchlist', entry).then(r => { if (r) S.watchlist[S.watchlist.length - 1]._id = r.id }); checkAlerts(); render()
-    }
-    async function unwatchTeam(t) { const i = S.watchlist.findIndex(w => w.sport === S.sport && w.team === t); if (i < 0) return; const it = S.watchlist.splice(i, 1)[0]; if (it?._id) await dbDel('watchlist', it._id); checkAlerts(); render() }
-    async function removeWatch(i) { const it = S.watchlist.splice(i, 1)[0]; if (it?._id) await dbDel('watchlist', it._id); checkAlerts(); render() }
+// WATCHLIST
+function addWatch(){
+  const sp=SP.find(s=>s.id===S.sport);
+  const teams=sp?.teams||[];if(!teams.length){alert('Select a sport with teams first');return}
+  const team=prompt(`Add a ${sp.name} team to your watchlist:\n\n${teams.join(', ')}`);
+  if(!team)return;
+  if(S.watchlist.some(w=>w.sport===S.sport&&w.team.toLowerCase()===team.toLowerCase()))return;
+  const entry={sport:S.sport,team};S.watchlist.push(entry);dbSave('watchlist',entry).then(r=>{if(r)S.watchlist[S.watchlist.length-1]._id=r.id});checkAlerts();render()}
+function watchTeam(t){
+  if(S.watchlist.some(w=>w.sport===S.sport&&w.team===t))return;
+  const entry={sport:S.sport,team:t};S.watchlist.push(entry);dbSave('watchlist',entry).then(r=>{if(r)S.watchlist[S.watchlist.length-1]._id=r.id});checkAlerts();render()}
+async function unwatchTeam(t){const i=S.watchlist.findIndex(w=>w.sport===S.sport&&w.team===t);if(i<0)return;const it=S.watchlist.splice(i,1)[0];if(it?._id)await dbDel('watchlist',it._id);checkAlerts();render()}
+async function removeWatch(i){const it=S.watchlist.splice(i,1)[0];if(it?._id)await dbDel('watchlist',it._id);checkAlerts();render()}
 
-    async function morningBrief() {
-      if (!aiReady || !S.watchlist.length) return;
-      const out = document.getElementById('briefOut');
-      if (out) out.innerHTML = `<div class="thk" style="margin-top:8px"><div class="dots"><span></span><span></span><span></span></div> Generating brief…</div>`;
-      const teams = S.watchlist.map(w => { const sp = SP.find(s => s.id === w.sport); return `${sp?.icon} ${w.team} (${sp?.name})` }).join('\n');
-      try { const briefText = await FMFO.streamAnalysis({ query: 'Morning briefing for: ' + teams, sport: 'nfl', mode: 'Pre-Game Intel' }, (text) => { if (out) out.innerHTML = `<div class="out" style="margin-top:8px">${esc(text)}</div>` }) } catch (e) { if (out) out.innerHTML = `<div style="color:var(--red);font-size:12px;margin-top:8px">Failed: ${e.message || 'try again'}</div>` }
-    }
+async function morningBrief(){
+  if(!aiReady||!S.watchlist.length)return;
+  const out=document.getElementById('briefOut');
+  if(out)out.innerHTML=`<div class="thk" style="margin-top:8px"><div class="dots"><span></span><span></span><span></span></div> Generating brief…</div>`;
+  const teams=S.watchlist.map(w=>{const sp=SP.find(s=>s.id===w.sport);return `${sp?.icon} ${w.team} (${sp?.name})`}).join('\n');
+  try{const briefText=await FMFO.streamAnalysis({query:'Morning briefing for: '+teams,sport:'nfl',mode:'Pre-Game Intel'},(text)=>{if(out)out.innerHTML=`<div class="out" style="margin-top:8px">${esc(text)}</div>`})}catch(e){if(out)out.innerHTML=`<div style="color:var(--red);font-size:12px;margin-top:8px">Failed: ${e.message||'try again'}</div>`}}
 
-    // CONTENT
-    function toContent() { if (!S.output) return; S.contentDraft = ''; S.page = 'content'; render(); genContentText(S.output) }
-    async function genContent(i) { const s = S.saved[i]; if (!s) return; genContentText(s.output) }
-    async function genContentText(text) {
-      if (!aiReady) { S.contentDraft = `📢 FMFO SPORTS INSIDER\n\n${text.substring(0, 500)}…\n\n🔗 formyfansonly.com\n#FMFOSports #WhatAreYouAFanOf`; render(); return }
-      S.contentDraft = 'Generating…'; render();
-      try { const cRes = await FMFO.generateContent(text.substring(0, 3000)); S.contentDraft = cRes.content || cRes } catch (e) { S.contentDraft = `📢 FMFO SPORTS\n\n${text.substring(0, 400)}…\n\n🔗 formyfansonly.com\n#WhatAreYouAFanOf` }
-      render()
-    }
-    async function genCustom() {
-      const inp = document.getElementById('cq'); const q = inp?.value?.trim(); if (!q || !aiReady) return; const out = document.getElementById('co'); if (out) out.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Generating…</div>`;
-      try { const r = await FMFO.streamAnalysis({ query: `FMFO Sports content writer for formyfansonly.com. Create engaging fan sports content. End with "What Are You A Fan Of?" Under 280 words.\n\nRequest: ${q}`, sport: S.sport, mode: 'Pre-Game Intel' }, (text) => { if (out) out.innerHTML = `<div class="cp">${esc(text)}</div>` }); if (out) out.innerHTML = `<div class="cp">${esc(r || '')}</div><div style="margin-top:6px"><button class="btn bp bsm" onclick="copyDraft()">📋 Copy</button></div>` } catch (e) { if (out) out.innerHTML = `<div style="color:var(--red);font-size:12px">Failed.</div>` }
-    }
-    function copyDraft() { if (S.contentDraft) navigator.clipboard?.writeText(S.contentDraft).then(() => { const b = event?.target; if (b) { b.textContent = '✓ Copied'; setTimeout(() => b.textContent = '📋 Copy', 1200) } }) }
+// CONTENT
+function toContent(){if(!S.output)return;S.contentDraft='';S.page='content';render();genContentText(S.output)}
+async function genContent(i){const s=S.saved[i];if(!s)return;genContentText(s.output)}
+async function genContentText(text){
+  if(!aiReady){S.contentDraft=`📢 FMFO SPORTS INSIDER\n\n${text.substring(0,500)}…\n\n🔗 formyfansonly.com\n#FMFOSports #WhatAreYouAFanOf`;render();return}
+  S.contentDraft='Generating…';render();
+  try{const cRes=await FMFO.generateContent(text.substring(0,3000));S.contentDraft=cRes.content||cRes}catch(e){S.contentDraft=`📢 FMFO SPORTS\n\n${text.substring(0,400)}…\n\n🔗 formyfansonly.com\n#WhatAreYouAFanOf`}
+  render()}
+async function genCustom(){const inp=document.getElementById('cq');const q=inp?.value?.trim();if(!q||!aiReady)return;const out=document.getElementById('co');if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Generating…</div>`;
+  try{const r=await FMFO.streamAnalysis({query:`FMFO Sports content writer for formyfansonly.com. Create engaging fan sports content. End with "What Are You A Fan Of?" Under 280 words.\n\nRequest: ${q}`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{if(out)out.innerHTML=`<div class="cp">${esc(text)}</div>`});if(out)out.innerHTML=`<div class="cp">${esc(r||'')}</div><div style="margin-top:6px"><button class="btn bp bsm" onclick="copyDraft()">📋 Copy</button></div>`}catch(e){if(out)out.innerHTML=`<div style="color:var(--red);font-size:12px">Failed.</div>`}}
+function copyDraft(){if(S.contentDraft)navigator.clipboard?.writeText(S.contentDraft).then(()=>{const b=event?.target;if(b){b.textContent='✓ Copied';setTimeout(()=>b.textContent='📋 Copy',1200)}})}
 
-    function renderLiveTicker() {
-      const keys = Object.keys(S.liveData);
-      if (!keys.length) return '';
-      let games = [];
-      keys.forEach(k => {
-        const d = S.liveData[k]; const sp = SP.find(s => s.id === k);
-        if (d.upcoming) d.upcoming.slice(0, 3).forEach(g => games.push({ ...g, sport: k, icon: sp?.icon || '📊', type: 'upcoming' }));
-        if (d.recent) d.recent.slice(-3).forEach(g => games.push({ ...g, sport: k, icon: sp?.icon || '📊', type: 'recent' }));
-      });
-      if (!games.length) return '';
-      return `<div class="card">
+function renderLiveTicker(){
+  const keys=Object.keys(S.liveData);
+  if(!keys.length)return '';
+  let games=[];
+  keys.forEach(k=>{
+    const d=S.liveData[k];const sp=SP.find(s=>s.id===k);
+    if(d.upcoming)d.upcoming.slice(0,3).forEach(g=>games.push({...g,sport:k,icon:sp?.icon||'📊',type:'upcoming'}));
+    if(d.recent)d.recent.slice(-3).forEach(g=>games.push({...g,sport:k,icon:sp?.icon||'📊',type:'recent'}));
+  });
+  if(!games.length)return '';
+  return `<div class="card">
     <div class="ch"><div class="ct">📡 Live Scoreboard</div><button class="btn bs bsm" onclick="go('scores')">View All</button></div>
     <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
-      ${games.slice(0, 8).map(g => {
-        if (g.type === 'recent') {
-          const winner = g.hs > g.as ? 'home' : 'away';
+      ${games.slice(0,8).map(g=>{
+        if(g.type==='recent'){
+          const winner=g.hs>g.as?'home':'away';
           return `<div class="sc" style="min-width:140px;cursor:pointer;padding:8px" onclick="analyzeGame('${g.sport}','${g.away} at ${g.home}')">
             <div style="font-size:10px;margin-bottom:4px">${g.icon}</div>
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <span style="font:${winner === 'away' ? '700' : '500'} 11px 'Inter',sans-serif">${g.away}</span>
+              <span style="font:${winner==='away'?'700':'500'} 11px 'Inter',sans-serif">${g.away}</span>
               <span style="font:700 13px 'Space Grotesk',sans-serif">${g.as}</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <span style="font:${winner === 'home' ? '700' : '500'} 11px 'Inter',sans-serif">${g.home}</span>
+              <span style="font:${winner==='home'?'700':'500'} 11px 'Inter',sans-serif">${g.home}</span>
               <span style="font:700 13px 'Space Grotesk',sans-serif">${g.hs}</span>
             </div>
-            <div style="font-size:8px;color:var(--text-3);margin-top:3px;text-align:center">${g.note || 'FINAL'}</div>
+            <div style="font-size:8px;color:var(--text-3);margin-top:3px;text-align:center">${g.note||'FINAL'}</div>
           </div>`
-        } else {
+        }else{
           return `<div class="sc" style="min-width:140px;cursor:pointer;padding:8px;border-color:rgba(0,232,123,.2)" onclick="analyzeGame('${g.sport}','${g.away} at ${g.home}')">
             <div style="font-size:10px;margin-bottom:4px">${g.icon} <span style="font-size:8px;color:var(--accent)">UPCOMING</span></div>
             <div style="font:600 11px 'Inter',sans-serif">${g.away}</div>
             <div style="font:500 10px/1 'Inter',sans-serif;color:var(--text-3);margin:2px 0">at</div>
             <div style="font:600 11px 'Inter',sans-serif">${g.home}</div>
-            <div style="font-size:9px;color:var(--text-2);margin-top:3px">${g.time || ''}</div>
-            ${g.wp ? `<div class="wp-bar"><div class="wp-fill" style="width:${typeof g.wp === 'object' ? Math.max(...Object.values(g.wp)) : 50}%"></div></div>` : ''}
+            <div style="font-size:9px;color:var(--text-2);margin-top:3px">${g.time||''}</div>
+            ${g.wp?`<div class="wp-bar"><div class="wp-fill" style="width:${typeof g.wp==='object'?Math.max(...Object.values(g.wp)):50}%"></div></div>`:''}
           </div>`
         }
       }).join('')}
     </div>
   </div>`}
 
-    function renderScores() {
-      const sportTabs = ['nfl', 'nba', 'mlb', 'nhl', 'soccer'];
-      const activeSport = sportTabs.includes(S.sport) ? S.sport : 'nfl';
-      const d = S.liveData[activeSport];
-      const sp = SP.find(s => s.id === activeSport);
+function renderScores(){
+  const sportTabs=['nfl','nba','mlb','nhl','soccer'];
+  const activeSport=sportTabs.includes(S.sport)?S.sport:'nfl';
+  const d=S.liveData[activeSport];
+  const sp=SP.find(s=>s.id===activeSport);
 
-      return `
+  return `
     <div class="ch"><div class="ct" style="font-size:18px">📡 Live Scores & Standings</div>
-      <div style="font-size:10px;color:var(--text-3)">${d?.updatedAt ? 'Updated: ' + new Date(d.updatedAt).toLocaleString() : ''}</div>
+      <div style="font-size:10px;color:var(--text-3)">${d?.updatedAt?'Updated: '+new Date(d.updatedAt).toLocaleString():''}</div>
     </div>
     <div class="tabs">
-      ${sportTabs.map(sid => { const s2 = SP.find(s => s.id === sid); const hasData = !!S.liveData[sid]; return `<button class="tab ${activeSport === sid ? 'on' : ''}" onclick="S.sport='${sid}';renderMain()">${s2?.icon} ${s2?.name}${hasData ? '' : ' ⏳'}</button>` }).join('')}
+      ${sportTabs.map(sid=>{const s2=SP.find(s=>s.id===sid);const hasData=!!S.liveData[sid];return `<button class="tab ${activeSport===sid?'on':''}" onclick="S.sport='${sid}';renderMain()">${s2?.icon} ${s2?.name}${hasData?'':' ⏳'}</button>`}).join('')}
     </div>
-    ${d ? `
-      ${d.champion ? `<div class="card" style="background:linear-gradient(135deg,rgba(0,232,123,.06),rgba(197,160,40,.06));border-color:var(--gold)">
+    ${d?`
+      ${d.champion?`<div class="card" style="background:linear-gradient(135deg,rgba(0,232,123,.06),rgba(197,160,40,.06));border-color:var(--gold)">
         <div style="text-align:center;padding:8px 0">
           <div style="font-size:28px">🏆</div>
           <div style="font:700 14px 'Space Grotesk',sans-serif;color:var(--gold);margin-top:4px">${d.champion}</div>
-          ${d.season ? `<div style="font-size:11px;color:var(--text-2);margin-top:4px">${d.season}</div>` : ''}
+          ${d.season?`<div style="font-size:11px;color:var(--text-2);margin-top:4px">${d.season}</div>`:''}
         </div>
-        ${d.playoffs ? `<div style="display:flex;justify-content:center;gap:12px;margin-top:8px;flex-wrap:wrap">
-          ${d.playoffs.map(p => `<div class="sc" style="padding:8px;min-width:120px;text-align:center">
+        ${d.playoffs?`<div style="display:flex;justify-content:center;gap:12px;margin-top:8px;flex-wrap:wrap">
+          ${d.playoffs.map(p=>`<div class="sc" style="padding:8px;min-width:120px;text-align:center">
             <div style="font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.5px;margin-bottom:3px">${p.r}</div>
             <div style="font:600 11px 'Inter',sans-serif">${p.s}</div>
           </div>`).join('')}
-        </div>`: ''}
-      </div>`: ''}
-      ${d.upcoming?.length ? `<div class="card">
-        <div class="ch"><div class="ct">${sp?.icon} Upcoming Games</div>${d.week ? `<div style="font-size:11px;color:var(--accent);font-weight:600">${d.week}</div>` : ''}</div>
+        </div>`:''}
+      </div>`:''}
+      ${d.upcoming?.length?`<div class="card">
+        <div class="ch"><div class="ct">${sp?.icon} Upcoming Games</div>${d.week?`<div style="font-size:11px;color:var(--accent);font-weight:600">${d.week}</div>`:''}</div>
         <div style="display:flex;flex-direction:column;gap:4px">
-          ${d.upcoming.map(g => `<div class="score-row" onclick="analyzeGame('${activeSport}','${g.away} vs ${g.home}')">
+          ${d.upcoming.map(g=>`<div class="score-row" onclick="analyzeGame('${activeSport}','${g.away} vs ${g.home}')">
             <div class="score-team" style="font-weight:600">${g.away}</div>
             <div class="score-vs">@</div>
             <div class="score-team" style="font-weight:600">${g.home}</div>
-            <div class="score-time">${g.time || ''}${g.note ? ' · <span style="color:var(--accent)">' + g.note + '</span>' : ''}</div>
-            ${g.wp ? `<div style="font-size:10px;color:var(--accent);margin-left:4px">${typeof g.wp === 'object' ? Object.entries(g.wp).map(([k, v]) => k + ' ' + v + '%').join(' / ') : g.wp}</div>` : ''}
+            <div class="score-time">${g.time||''}${g.note?' · <span style="color:var(--accent)">'+g.note+'</span>':''}</div>
+            ${g.wp?`<div style="font-size:10px;color:var(--accent);margin-left:4px">${typeof g.wp==='object'?Object.entries(g.wp).map(([k,v])=>k+' '+v+'%').join(' / '):g.wp}</div>`:''}
           </div>`).join('')}
         </div>
-      </div>`: ''}
-      ${d.recent?.length ? `<div class="card">
+      </div>`:''}
+      ${d.recent?.length?`<div class="card">
         <div class="ch"><div class="ct">${sp?.icon} Recent Results</div></div>
         <div style="display:flex;flex-direction:column;gap:4px">
-          ${[...d.recent].reverse().slice(0, 12).map(g => {
-        const aw = g.as > g.hs; const hw = g.hs > g.as; return `<div class="score-row" onclick="analyzeGame('${activeSport}','${g.away} ${g.as} - ${g.hs} ${g.home}')">
-            <div class="score-team" style="font-weight:${aw ? '700' : '400'};color:${aw ? 'var(--text-1)' : 'var(--text-3)'}">${g.away}</div>
-            <div class="score-num" style="color:${aw ? 'var(--accent)' : 'var(--text-2)'}">${g.as}</div>
+          ${[...d.recent].reverse().slice(0,12).map(g=>{const aw=g.as>g.hs;const hw=g.hs>g.as;return `<div class="score-row" onclick="analyzeGame('${activeSport}','${g.away} ${g.as} - ${g.hs} ${g.home}')">
+            <div class="score-team" style="font-weight:${aw?'700':'400'};color:${aw?'var(--text-1)':'var(--text-3)'}">${g.away}</div>
+            <div class="score-num" style="color:${aw?'var(--accent)':'var(--text-2)'}">${g.as}</div>
             <div class="score-vs">–</div>
-            <div class="score-num" style="color:${hw ? 'var(--accent)' : 'var(--text-2)'}">${g.hs}</div>
-            <div class="score-team" style="font-weight:${hw ? '700' : '400'};color:${hw ? 'var(--text-1)' : 'var(--text-3)'}">${g.home}</div>
-            <div class="score-final">${g.note || 'Final'}</div>
+            <div class="score-num" style="color:${hw?'var(--accent)':'var(--text-2)'}">${g.hs}</div>
+            <div class="score-team" style="font-weight:${hw?'700':'400'};color:${hw?'var(--text-1)':'var(--text-3)'}">${g.home}</div>
+            <div class="score-final">${g.note||'Final'}</div>
           </div>`}).join('')}
         </div>
-      </div>`: ''}
-      ${d.standings?.length ? `<div class="card">
+      </div>`:''}
+      ${d.standings?.length?`<div class="card">
         <div class="ch"><div class="ct">${sp?.icon} Standings</div></div>
         ${renderStandings(d.standings)}
-      </div>`: ''}
-    `: `<div class="card"><div class="es"><div class="big">📡</div><div style="font-size:12px">No live data available for ${sp?.name} yet. Data loads when the season is active.</div></div></div>`}`
-    }
+      </div>`:''}
+    `:`<div class="card"><div class="es"><div class="big">📡</div><div style="font-size:12px">No live data available for ${sp?.name} yet. Data loads when the season is active.</div></div></div>`}`}
 
-    function renderStandings(standings) {
-      const divs = {}; standings.forEach(s => { if (!divs[s.d]) divs[s.d] = []; divs[s.d].push(s) });
-      return `<div class="g2">${Object.entries(divs).sort((a, b) => a[0].localeCompare(b[0])).map(([div, teams]) => `
+function renderStandings(standings){
+  const divs={};standings.forEach(s=>{if(!divs[s.d])divs[s.d]=[];divs[s.d].push(s)});
+  return `<div class="g2">${Object.entries(divs).sort((a,b)=>a[0].localeCompare(b[0])).map(([div,teams])=>`
     <div>
       <div style="font:600 11px 'Inter',sans-serif;color:var(--accent);margin-bottom:4px;padding:0 8px">${div}</div>
-      ${teams.sort((a, b) => b.w - a.w || (a.l - b.l)).map((t, i) => `<div class="standing-row">
-        <div class="standing-rank">${i + 1}</div>
+      ${teams.sort((a,b)=>b.w-a.w||(a.l-b.l)).map((t,i)=>`<div class="standing-row">
+        <div class="standing-rank">${i+1}</div>
         <div class="standing-team">${t.t}</div>
         <div class="standing-rec">${t.w}-${t.l}</div>
       </div>`).join('')}
-    </div>`).join('')}</div>`
-    }
+    </div>`).join('')}</div>`}
 
-    function analyzeGame(sport, matchup) {
-      // Parse matchup string to extract teams and scores
-      const parts = matchup.split(/\s+(?:vs|at|-)\s+/i);
-      if (parts.length >= 2) {
-        const awayParts = parts[0].trim().split(/\s+/);
-        const homeParts = parts[1].trim().split(/\s+/);
-        const away = awayParts[0]; const as = awayParts[1] || 0;
-        const home = homeParts[homeParts.length - 1] || homeParts[0]; const hs = homeParts.length > 1 ? homeParts[0] : 0;
-        const hasScore = parseInt(as) > 0 || parseInt(hs) > 0;
-        openGame(sport, away, home, hasScore ? as : 0, hasScore ? hs : 0, hasScore ? 'final' : 'upcoming', '', '');
-        return;
-      }
-      S.sport = sport; S.page = 'analyze'; S.mode = 'pre'; S.output = '';
-      render();
-      setTimeout(() => { const inp = document.getElementById('qi'); if (inp) { inp.value = matchup + ' — full breakdown'; runQ() } }, 100)
-    }
+function analyzeGame(sport,matchup){
+  // Parse matchup string to extract teams and scores
+  const parts=matchup.split(/\s+(?:vs|at|-)\s+/i);
+  if(parts.length>=2){
+    const awayParts=parts[0].trim().split(/\s+/);
+    const homeParts=parts[1].trim().split(/\s+/);
+    const away=awayParts[0];const as=awayParts[1]||0;
+    const home=homeParts[homeParts.length-1]||homeParts[0];const hs=homeParts.length>1?homeParts[0]:0;
+    const hasScore=parseInt(as)>0||parseInt(hs)>0;
+    openGame(sport,away,home,hasScore?as:0,hasScore?hs:0,hasScore?'final':'upcoming','','');
+    return;
+  }
+  S.sport=sport;S.page='analyze';S.mode='pre';S.output='';
+  render();
+  setTimeout(()=>{const inp=document.getElementById('qi');if(inp){inp.value=matchup+' — full breakdown';runQ()}},100)}
 
-    // ============ HEAD-TO-HEAD ============
-    function renderH2H() {
-      const sp = SP.find(s => s.id === S.sport);
-      const teams = sp?.teams || [];
-      return `
+// ============ HEAD-TO-HEAD ============
+function renderH2H(){
+  const sp=SP.find(s=>s.id===S.sport);
+  const teams=sp?.teams||[];
+  return `
     <div class="ct" style="font-size:18px">⚔️ Head-to-Head Matchup</div>
     <div style="font-size:12px;color:var(--text-2);margin-bottom:6px">Compare any two teams or fighters with AI-powered breakdown.</div>
     <div class="card">
-      <div class="tab-row">${SP.map(s => `<button class="chip ${S.sport === s.id ? 'on' : ''}" onclick="S.sport='${s.id}';S.h2h={teamA:'',teamB:'',result:''};render()">${s.icon} ${s.name}</button>`).join('')}</div>
+      <div class="tab-row">${SP.map(s=>`<button class="chip ${S.sport===s.id?'on':''}" onclick="S.sport='${s.id}';S.h2h={teamA:'',teamB:'',result:''};render()">${s.icon} ${s.name}</button>`).join('')}</div>
       <div class="h2h-vs">
         <div class="h2h-team">
-          <div class="h2h-badge" style="background:${sp?.c || '#333'}18">${sp?.icon || '📊'}</div>
+          <div class="h2h-badge" style="background:${sp?.c||'#333'}18">${sp?.icon||'📊'}</div>
           <select class="inp" style="text-align:center;max-width:160px" onchange="S.h2h.teamA=this.value;render()">
             <option value="">Select Team</option>
-            ${teams.map(t => `<option value="${t}" ${S.h2h.teamA === t ? 'selected' : ''}>${t}</option>`).join('')}
+            ${teams.map(t=>`<option value="${t}" ${S.h2h.teamA===t?'selected':''}>${t}</option>`).join('')}
           </select>
         </div>
         <div class="h2h-divider">VS</div>
         <div class="h2h-team">
-          <div class="h2h-badge" style="background:${sp?.c || '#333'}18">${sp?.icon || '📊'}</div>
+          <div class="h2h-badge" style="background:${sp?.c||'#333'}18">${sp?.icon||'📊'}</div>
           <select class="inp" style="text-align:center;max-width:160px" onchange="S.h2h.teamB=this.value;render()">
             <option value="">Select Team</option>
-            ${teams.map(t => `<option value="${t}" ${S.h2h.teamB === t ? 'selected' : ''}>${t}</option>`).join('')}
+            ${teams.map(t=>`<option value="${t}" ${S.h2h.teamB===t?'selected':''}>${t}</option>`).join('')}
           </select>
         </div>
       </div>
-      ${S.h2h.teamA && S.h2h.teamB ? `
+      ${S.h2h.teamA&&S.h2h.teamB?`
         <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:12px">
           <button class="btn bp" onclick="runH2H('full')">⚡ Full Breakdown</button>
           <button class="btn bs" onclick="runH2H('stats')">📊 Stat Comparison</button>
           <button class="btn bs" onclick="runH2H('history')">📚 History</button>
           <button class="btn bsm" style="background:rgba(168,85,247,.12);color:var(--purple);border:none" onclick="runH2H('predict')">🔮 Predict Winner</button>
         </div>
-      `: `<div style="text-align:center;font-size:12px;color:var(--text-3);padding:8px">Select two teams above to compare</div>`}
+      `:`<div style="text-align:center;font-size:12px;color:var(--text-3);padding:8px">Select two teams above to compare</div>`}
       <div id="h2hOut"></div>
     </div>
-    ${S.h2h.result ? `
+    ${S.h2h.result?`
       <div class="share-card">
         <div style="font:700 12px 'Space Grotesk',sans-serif;color:var(--accent);margin-bottom:4px">${sp?.icon} ${sp?.name} HEAD-TO-HEAD</div>
         <div style="font:800 16px 'Space Grotesk',sans-serif;margin-bottom:8px">${esc(S.h2h.teamA)} vs ${esc(S.h2h.teamB)}</div>
@@ -1788,58 +719,57 @@
           <button class="btn bs bsm" onclick="saveH2H()">💾 Save</button>
         </div>
       </div>
-    `: ''}`
-    }
+    `:''}`}
 
-    async function runH2H(type) {
-      if (!S.h2h.teamA || !S.h2h.teamB) return;
-      const sp = SP.find(s => s.id === S.sport);
-      const out = document.getElementById('h2hOut');
-      if (out) out.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Analyzing matchup…</div>`;
+async function runH2H(type){
+  if(!S.h2h.teamA||!S.h2h.teamB)return;
+  const sp=SP.find(s=>s.id===S.sport);
+  const out=document.getElementById('h2hOut');
+  if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Analyzing matchup…</div>`;
 
-      const prompts = {
-        full: `Complete head-to-head breakdown of ${S.h2h.teamA} vs ${S.h2h.teamB} in ${sp.name}. Cover recent form, key matchups, statistical edges, historical results, and give your verdict on who has the advantage and why.`,
-        stats: `Statistical comparison: ${S.h2h.teamA} vs ${S.h2h.teamB} (${sp.name}). Compare key metrics side-by-side — offense, defense, special teams/set pieces, and any standout individual matchups.`,
-        history: `Historical rivalry analysis: ${S.h2h.teamA} vs ${S.h2h.teamB} in ${sp.name}. Head-to-head record, memorable matchups, turning points in the rivalry, and current trajectory.`,
-        predict: `Predict the outcome: ${S.h2h.teamA} vs ${S.h2h.teamB} (${sp.name}). Give a definitive pick with confidence %, the predicted score/result, three reasons why, and the key factor that decides it.`
-      };
+  const prompts={
+    full:`Complete head-to-head breakdown of ${S.h2h.teamA} vs ${S.h2h.teamB} in ${sp.name}. Cover recent form, key matchups, statistical edges, historical results, and give your verdict on who has the advantage and why.`,
+    stats:`Statistical comparison: ${S.h2h.teamA} vs ${S.h2h.teamB} (${sp.name}). Compare key metrics side-by-side — offense, defense, special teams/set pieces, and any standout individual matchups.`,
+    history:`Historical rivalry analysis: ${S.h2h.teamA} vs ${S.h2h.teamB} in ${sp.name}. Head-to-head record, memorable matchups, turning points in the rivalry, and current trajectory.`,
+    predict:`Predict the outcome: ${S.h2h.teamA} vs ${S.h2h.teamB} (${sp.name}). Give a definitive pick with confidence %, the predicted score/result, three reasons why, and the key factor that decides it.`
+  };
 
-      const query = prompts[type] || prompts.full;
-      if (aiReady) {
-        try {
-          const r = await FMFO.streamAnalysis({ query: `${sp.name} expert analysis.\n\n${query}\n\nEnd with:\n📌 COMMENTATOR TALKING POINT`, sport: S.sport, mode: 'Pre-Game Intel' }, (text) => { S.h2h.result = text; if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(text)}</div>` });
-          S.h2h.result = r.text;
-        } catch (e) { S.h2h.result = `Analysis error: ${e.message || 'try again'}`; }
-      } else {
-        S.h2h.result = `⚔️ ${S.h2h.teamA} vs ${S.h2h.teamB}\n\n⚠️ AI offline. Server is starting up — try again.\n\n— FMFO Sports · formyfansonly.com`;
-      }
-      S.history.push({ query: `H2H: ${S.h2h.teamA} vs ${S.h2h.teamB}`, sport: S.sport, mode: 'Head-to-Head', time: new Date().toLocaleTimeString(), output: S.h2h.result });
-      render();
-    }
+  const query=prompts[type]||prompts.full;
+  if(aiReady){
+    try{
+      const r=await FMFO.streamAnalysis({query:`${sp.name} expert analysis.\n\n${query}\n\nEnd with:\n📌 COMMENTATOR TALKING POINT`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{S.h2h.result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
+      S.h2h.result=r.text;
+    }catch(e){S.h2h.result=`Analysis error: ${e.message||'try again'}`;}
+  }else{
+    S.h2h.result=`⚔️ ${S.h2h.teamA} vs ${S.h2h.teamB}\n\n⚠️ AI offline. Server is starting up — try again.\n\n— FMFO Sports · formyfansonly.com`;
+  }
+  S.history.push({query:`H2H: ${S.h2h.teamA} vs ${S.h2h.teamB}`,sport:S.sport,mode:'Head-to-Head',time:new Date().toLocaleTimeString(),output:S.h2h.result});
+  render();
+}
 
-    function saveH2H() {
-      if (!S.h2h.result) return;
-      const entry = { query: `H2H: ${S.h2h.teamA} vs ${S.h2h.teamB}`, sport: S.sport, tab: 'h2h', output: S.h2h.result, savedAt: new Date().toISOString() };
-      S.saved.push(entry); dbSave('analyses', entry).then(r => { if (r) S.saved[S.saved.length - 1]._id = r.id }); render();
-    }
+function saveH2H(){
+  if(!S.h2h.result)return;
+  const entry={query:`H2H: ${S.h2h.teamA} vs ${S.h2h.teamB}`,sport:S.sport,tab:'h2h',output:S.h2h.result,savedAt:new Date().toISOString()};
+  S.saved.push(entry);dbSave('analyses',entry).then(r=>{if(r)S.saved[S.saved.length-1]._id=r.id});render();
+}
 
-    // ============ GAME DETAIL ============
-    function renderGameDetail() {
-      const g = S.gameCtx;
-      if (!g) return `<div class="card"><div class="es"><div class="big">🏟️</div><div>No game selected. Click a game from Live Scores.</div></div></div>`;
-      const sp = SP.find(s => s.id === g.sport);
-      const isFinal = g.status === 'final' || g.status === 'recent';
-      return `
+// ============ GAME DETAIL ============
+function renderGameDetail(){
+  const g=S.gameCtx;
+  if(!g)return `<div class="card"><div class="es"><div class="big">🏟️</div><div>No game selected. Click a game from Live Scores.</div></div></div>`;
+  const sp=SP.find(s=>s.id===g.sport);
+  const isFinal=g.status==='final'||g.status==='recent';
+  return `
     <div class="game-hero">
-      <div style="font-size:11px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px">${sp?.icon} ${sp?.name?.toUpperCase()}${g.note ? ' · ' + g.note : ''}</div>
+      <div style="font-size:11px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px">${sp?.icon} ${sp?.name?.toUpperCase()}${g.note?' · '+g.note:''}</div>
       <div class="game-teams-big">
-        <div class="game-team-big" style="color:${!isFinal || g.as > g.hs ? 'var(--text-1)' : 'var(--text-3)'}">${g.away}</div>
-        ${isFinal ? `
-          <div class="game-score-big"><span style="color:${g.as > g.hs ? 'var(--accent)' : 'var(--text-2)'}">${g.as}</span> <span style="color:var(--text-3)">—</span> <span style="color:${g.hs > g.as ? 'var(--accent)' : 'var(--text-2)'}">${g.hs}</span></div>
-        `: `<div class="game-score-big" style="color:var(--text-3)">vs</div>`}
-        <div class="game-team-big" style="color:${!isFinal || g.hs > g.as ? 'var(--text-1)' : 'var(--text-3)'}">${g.home}</div>
+        <div class="game-team-big" style="color:${!isFinal||g.as>g.hs?'var(--text-1)':'var(--text-3)'}">${g.away}</div>
+        ${isFinal?`
+          <div class="game-score-big"><span style="color:${g.as>g.hs?'var(--accent)':'var(--text-2)'}">${g.as}</span> <span style="color:var(--text-3)">—</span> <span style="color:${g.hs>g.as?'var(--accent)':'var(--text-2)'}">${g.hs}</span></div>
+        `:`<div class="game-score-big" style="color:var(--text-3)">vs</div>`}
+        <div class="game-team-big" style="color:${!isFinal||g.hs>g.as?'var(--text-1)':'var(--text-3)'}">${g.home}</div>
       </div>
-      <div style="font-size:11px;color:var(--text-3);margin-top:4px">${isFinal ? 'FINAL' : 'UPCOMING'}${g.time ? ' · ' + g.time : ''}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">${isFinal?'FINAL':'UPCOMING'}${g.time?' · '+g.time:''}</div>
     </div>
     <div class="card">
       <div class="ct" style="margin-bottom:10px">Quick Analysis</div>
@@ -1848,75 +778,75 @@
         <button class="btn bs bsm" onclick="gameAnalysis('key')">🔑 Key Matchups</button>
         <button class="btn bs bsm" onclick="gameAnalysis('narrative')">📖 Storylines</button>
         <button class="btn bsm" style="background:rgba(168,85,247,.12);color:var(--purple);border:none" onclick="gameAnalysis('predict')">🔮 Predict</button>
-        ${isFinal ? `<button class="btn bs bsm" onclick="gameAnalysis('grade')">📊 Grade</button>` : ``}
+        ${isFinal?`<button class="btn bs bsm" onclick="gameAnalysis('grade')">📊 Grade</button>`:``}
       </div>
       <div id="gameOut"></div>
     </div>`}
 
-    async function gameAnalysis(type) {
-      const g = S.gameCtx; if (!g) return;
-      const sp = SP.find(s => s.id === g.sport);
-      const out = document.getElementById('gameOut');
-      if (out) out.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Analyzing…</div>`;
-      const isFinal = g.status === 'final' || g.status === 'recent';
-      const context = isFinal ? `${g.away} ${g.as} - ${g.hs} ${g.home} (Final)` : `${g.away} at ${g.home} (Upcoming${g.time ? ' — ' + g.time : ''})`;
-      const prompts = {
-        full: `Complete ${isFinal ? 'post-game' : 'pre-game'} breakdown: ${context}`,
-        key: `Key matchups and factors to watch: ${context}`,
-        narrative: `Top storylines and narrative angles for broadcast: ${context}`,
-        predict: `Bold prediction with confidence %: ${context}`,
-        grade: `Grade both teams' performance and coaching decisions: ${context}`,
-      };
-      const query = prompts[type] || prompts.full;
-      let result = '';
-      if (aiReady) {
-        try {
-          const r = await FMFO.streamAnalysis({ query: `${sp.name} analysis.\n\n${query}\n\nEnd with: 📌 COMMENTATOR TALKING POINT`, sport: S.sport, mode: 'Pre-Game Intel' }, (text) => { result = text; if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(text)}</div>` });
-          result = r.text;
-        } catch (e) { result = `Error: ${e.message || 'try again'}`; }
-      } else { result = `⚠️ AI offline.\n${context}\n— FMFO Sports`; }
-      S.history.push({ query: `Game: ${context}`, sport: g.sport, mode: isFinal ? 'Post-Game Review' : 'Pre-Game Intel', time: new Date().toLocaleTimeString(), output: result });
-      S.output = result;
-      if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(result)}</div>
+async function gameAnalysis(type){
+  const g=S.gameCtx;if(!g)return;
+  const sp=SP.find(s=>s.id===g.sport);
+  const out=document.getElementById('gameOut');
+  if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Analyzing…</div>`;
+  const isFinal=g.status==='final'||g.status==='recent';
+  const context=isFinal?`${g.away} ${g.as} - ${g.hs} ${g.home} (Final)`:`${g.away} at ${g.home} (Upcoming${g.time?' — '+g.time:''})`;
+  const prompts={
+    full:`Complete ${isFinal?'post-game':'pre-game'} breakdown: ${context}`,
+    key:`Key matchups and factors to watch: ${context}`,
+    narrative:`Top storylines and narrative angles for broadcast: ${context}`,
+    predict:`Bold prediction with confidence %: ${context}`,
+    grade:`Grade both teams' performance and coaching decisions: ${context}`,
+  };
+  const query=prompts[type]||prompts.full;
+  let result='';
+  if(aiReady){
+    try{
+      const r=await FMFO.streamAnalysis({query:`${sp.name} analysis.\n\n${query}\n\nEnd with: 📌 COMMENTATOR TALKING POINT`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
+      result=r.text;
+    }catch(e){result=`Error: ${e.message||'try again'}`;}
+  }else{result=`⚠️ AI offline.\n${context}\n— FMFO Sports`;}
+  S.history.push({query:`Game: ${context}`,sport:g.sport,mode:isFinal?'Post-Game Review':'Pre-Game Intel',time:new Date().toLocaleTimeString(),output:result});
+  S.output=result;
+  if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(result)}</div>
     <div style="display:flex;gap:6px;margin-top:8px">
       <button class="btn bp bsm" onclick="copyText(S.output)">📋 Copy</button>
       <button class="btn bs bsm" onclick="shareAsContent(S.output)">📝 Post</button>
       <button class="btn bs bsm" onclick="saveGameAnalysis('${esc(context)}')">💾 Save</button>
     </div>`;
-      renderSide();
-    }
+  renderSide();
+}
 
-    function saveGameAnalysis(ctx) {
-      const entry = { query: `Game: ${ctx}`, sport: S.gameCtx?.sport || S.sport, tab: 'game', output: S.output, savedAt: new Date().toISOString() };
-      S.saved.push(entry); dbSave('analyses', entry).then(r => { if (r) S.saved[S.saved.length - 1]._id = r.id });
-    }
+function saveGameAnalysis(ctx){
+  const entry={query:`Game: ${ctx}`,sport:S.gameCtx?.sport||S.sport,tab:'game',output:S.output,savedAt:new Date().toISOString()};
+  S.saved.push(entry);dbSave('analyses',entry).then(r=>{if(r)S.saved[S.saved.length-1]._id=r.id});
+}
 
-    function openGame(sport, away, home, as, hs, status, note, time) {
-      S.gameCtx = { sport, away, home, as: parseInt(as) || 0, hs: parseInt(hs) || 0, status, note: note || '', time: time || '' };
-      S.page = 'gameDetail'; render();
-    }
+function openGame(sport,away,home,as,hs,status,note,time){
+  S.gameCtx={sport,away,home,as:parseInt(as)||0,hs:parseInt(hs)||0,status,note:note||'',time:time||''};
+  S.page='gameDetail';render();
+}
 
-    // ============ SHARE HELPERS ============
-    function copyText(text) {
-      const clean = typeof text === 'string' ? text : S.output || '';
-      navigator.clipboard?.writeText(clean).then(() => {
-        const b = event?.target; if (b) { const orig = b.textContent; b.textContent = '✓ Copied'; setTimeout(() => b.textContent = orig, 1200); }
-      });
-    }
+// ============ SHARE HELPERS ============
+function copyText(text){
+  const clean=typeof text==='string'?text:S.output||'';
+  navigator.clipboard?.writeText(clean).then(()=>{
+    const b=event?.target;if(b){const orig=b.textContent;b.textContent='✓ Copied';setTimeout(()=>b.textContent=orig,1200);}
+  });
+}
 
-    function shareAsContent(text) {
-      S.contentDraft = ''; S.page = 'content'; render();
-      genContentText(typeof text === 'string' ? text : S.output || '');
-    }
+function shareAsContent(text){
+  S.contentDraft='';S.page='content';render();
+  genContentText(typeof text==='string'?text:S.output||'');
+}
 
-    // ============ PLAYER SPOTLIGHT ============
-    function renderPlayer() {
-      const sp = SP.find(s => s.id === S.sport);
-      return `
+// ============ PLAYER SPOTLIGHT ============
+function renderPlayer(){
+  const sp=SP.find(s=>s.id===S.sport);
+  return `
     <div class="ct" style="font-size:18px">🎯 Player Spotlight</div>
     <div style="font-size:12px;color:var(--text-2);margin-bottom:6px">Deep-dive analysis on any player across any sport.</div>
     <div class="card">
-      <div class="tab-row">${SP.map(s => `<button class="chip ${S.sport === s.id ? 'on' : ''}" onclick="S.sport='${s.id}';render()">${s.icon}</button>`).join('')}</div>
+      <div class="tab-row">${SP.map(s=>`<button class="chip ${S.sport===s.id?'on':''}" onclick="S.sport='${s.id}';render()">${s.icon}</button>`).join('')}</div>
       <div class="ir">
         <input class="inp" id="playerQ" placeholder="Enter a player name — e.g. Patrick Mahomes, Lionel Messi, Canelo…" onkeydown="if(event.key==='Enter')runPlayerSearch()">
         <button class="btn bp" onclick="runPlayerSearch()">🎯 Analyze</button>
@@ -1931,54 +861,54 @@
       <div id="playerOut"></div>
     </div>`}
 
-    async function runPlayerSearch() {
-      const inp = document.getElementById('playerQ');
-      const name = inp?.value?.trim(); if (!name) return;
-      runPlayerAnalysis(name, 'full');
-    }
-    function runPlayerType(type) {
-      const inp = document.getElementById('playerQ');
-      const name = inp?.value?.trim(); if (!name) { alert('Enter a player name first'); return; }
-      runPlayerAnalysis(name, type);
-    }
-    async function runPlayerAnalysis(name, type) {
-      const sp = SP.find(s => s.id === S.sport);
-      const out = document.getElementById('playerOut');
-      if (out) out.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Scouting ${esc(name)}…</div>`;
-      const prompts = {
-        full: `Complete player spotlight on ${name} (${sp.name}). Current form, key stats, role on their team, strengths and weaknesses, and what makes them must-watch for broadcast.`,
-        scouting: `Professional scouting report on ${name} (${sp.name}). Physical tools, technique, tendencies, strengths, weaknesses, and overall grade.`,
-        stats: `Current season statistical breakdown for ${name} (${sp.name}). Key numbers, how they rank among peers, trends, and what the numbers tell us.`,
-        narrative: `The story of ${name}'s season so far (${sp.name}). Narrative arc, key moments, what's at stake, and the storyline commentators should be telling.`,
-        compare: `Historical player comparison for ${name} (${sp.name}). Who is their closest comparison from the past? Break down the similarities, differences, and what it means for their trajectory.`,
-        mvp: `Award case for ${name} (${sp.name}). Make the case for why they should win their sport's top individual award. Stats, impact, narrative, and how they stack up against competitors.`
-      };
-      let result = '';
-      if (aiReady) {
-        try {
-          const r = await FMFO.streamAnalysis({ query: `${sp.name} player analysis.\n\n${prompts[type] || prompts.full}\n\nEnd with: 📌 COMMENTATOR TALKING POINT about this player.`, sport: S.sport, mode: 'Pre-Game Intel' }, (text) => { result = text; if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(text)}</div>` });
-          result = r.text;
-        } catch (e) { result = `Error: ${e.message || 'try again'}`; }
-      } else { result = `🎯 ${name} — ${sp.name}\n\n⚠️ AI offline.\n— FMFO Sports`; }
-      if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(result)}</div>
+async function runPlayerSearch(){
+  const inp=document.getElementById('playerQ');
+  const name=inp?.value?.trim();if(!name)return;
+  runPlayerAnalysis(name,'full');
+}
+function runPlayerType(type){
+  const inp=document.getElementById('playerQ');
+  const name=inp?.value?.trim();if(!name){alert('Enter a player name first');return;}
+  runPlayerAnalysis(name,type);
+}
+async function runPlayerAnalysis(name,type){
+  const sp=SP.find(s=>s.id===S.sport);
+  const out=document.getElementById('playerOut');
+  if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Scouting ${esc(name)}…</div>`;
+  const prompts={
+    full:`Complete player spotlight on ${name} (${sp.name}). Current form, key stats, role on their team, strengths and weaknesses, and what makes them must-watch for broadcast.`,
+    scouting:`Professional scouting report on ${name} (${sp.name}). Physical tools, technique, tendencies, strengths, weaknesses, and overall grade.`,
+    stats:`Current season statistical breakdown for ${name} (${sp.name}). Key numbers, how they rank among peers, trends, and what the numbers tell us.`,
+    narrative:`The story of ${name}'s season so far (${sp.name}). Narrative arc, key moments, what's at stake, and the storyline commentators should be telling.`,
+    compare:`Historical player comparison for ${name} (${sp.name}). Who is their closest comparison from the past? Break down the similarities, differences, and what it means for their trajectory.`,
+    mvp:`Award case for ${name} (${sp.name}). Make the case for why they should win their sport's top individual award. Stats, impact, narrative, and how they stack up against competitors.`
+  };
+  let result='';
+  if(aiReady){
+    try{
+      const r=await FMFO.streamAnalysis({query:`${sp.name} player analysis.\n\n${prompts[type]||prompts.full}\n\nEnd with: 📌 COMMENTATOR TALKING POINT about this player.`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
+      result=r.text;
+    }catch(e){result=`Error: ${e.message||'try again'}`;}
+  }else{result=`🎯 ${name} — ${sp.name}\n\n⚠️ AI offline.\n— FMFO Sports`;}
+  if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(result)}</div>
     <div style="display:flex;gap:6px;margin-top:8px">
-      <button class="btn bp bsm" onclick="copyText('${result.replace(/'/g, "\\'")}')">📋 Copy</button>
-      <button class="btn bs bsm" onclick="S.output='${result.replace(/'/g, "\\'")}';shareAsContent(S.output)">📝 Post</button>
+      <button class="btn bp bsm" onclick="copyText('${result.replace(/'/g,"\\'")}')">📋 Copy</button>
+      <button class="btn bs bsm" onclick="S.output='${result.replace(/'/g,"\\'")}';shareAsContent(S.output)">📝 Post</button>
     </div>`;
-      S.output = result;
-      S.history.push({ query: `Player: ${name}`, sport: S.sport, mode: 'Player Spotlight', time: new Date().toLocaleTimeString(), output: result });
-      renderSide();
-    }
+  S.output=result;
+  S.history.push({query:`Player: ${name}`,sport:S.sport,mode:'Player Spotlight',time:new Date().toLocaleTimeString(),output:result});
+  renderSide();
+}
 
-    // ============ PARLAY BUILDER ============
-    function renderParlay() {
-      const sp = SP.find(s => s.id === S.sport);
-      const totalLegs = S.parlay.length;
-      return `
+// ============ PARLAY BUILDER ============
+function renderParlay(){
+  const sp=SP.find(s=>s.id===S.sport);
+  const totalLegs=S.parlay.length;
+  return `
     <div class="ct" style="font-size:18px">🎰 Parlay Builder</div>
     <div class="pb">🔮 Entertainment analysis tool — not gambling advice.</div>
     <div class="card">
-      <div class="tab-row">${SP.map(s => `<button class="chip ${S.sport === s.id ? 'on' : ''}" onclick="S.sport='${s.id}';render()">${s.icon}</button>`).join('')}</div>
+      <div class="tab-row">${SP.map(s=>`<button class="chip ${S.sport===s.id?'on':''}" onclick="S.sport='${s.id}';render()">${s.icon}</button>`).join('')}</div>
       <div class="ir">
         <input class="inp" id="parlayPick" placeholder="Add a pick — e.g. Chiefs ML, Over 45.5, Mahomes 300+ yards…" onkeydown="if(event.key==='Enter')addParlayLeg()">
         <button class="btn bp bsm" onclick="addParlayLeg()">+ Add</button>
@@ -1986,14 +916,14 @@
     </div>
     <div class="parlay-slip">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div style="font:700 14px 'Space Grotesk',sans-serif;color:var(--purple)">🎰 Your Parlay — ${totalLegs} Leg${totalLegs !== 1 ? 's' : ''}</div>
-        ${totalLegs ? `<button class="btn bd bsm" onclick="S.parlay=[];render()">Clear All</button>` : ''}
+        <div style="font:700 14px 'Space Grotesk',sans-serif;color:var(--purple)">🎰 Your Parlay — ${totalLegs} Leg${totalLegs!==1?'s':''}</div>
+        ${totalLegs?`<button class="btn bd bsm" onclick="S.parlay=[];render()">Clear All</button>`:''}
       </div>
-      ${totalLegs ? `
-        ${S.parlay.map((p, i) => `<div class="parlay-pick">
-          <span style="font-size:12px">${SP.find(s => s.id === p.sport)?.icon || '📊'}</span>
+      ${totalLegs?`
+        ${S.parlay.map((p,i)=>`<div class="parlay-pick">
+          <span style="font-size:12px">${SP.find(s=>s.id===p.sport)?.icon||'📊'}</span>
           <span style="font:600 12px 'Inter',sans-serif">${esc(p.pick)}</span>
-          <span style="font-size:10px;color:var(--text-3)">${SP.find(s => s.id === p.sport)?.name || ''}</span>
+          <span style="font-size:10px;color:var(--text-3)">${SP.find(s=>s.id===p.sport)?.name||''}</span>
           <button class="remove" onclick="S.parlay.splice(${i},1);render()">✕</button>
         </div>`).join('')}
         <div style="display:flex;gap:6px;margin-top:10px">
@@ -2001,71 +931,71 @@
           <button class="btn bs" onclick="analyzeParlayRisk()">⚠️ Risk Assessment</button>
           <button class="btn bsm" style="background:rgba(168,85,247,.12);color:var(--purple);border:none" onclick="analyzeParlayAlt()">🔄 Suggest Alternatives</button>
         </div>
-      `: `<div class="es" style="padding:16px"><div class="big">🎰</div><div style="font-size:12px">Add picks above to build your parlay. Mix sports for cross-sport parlays.</div></div>`}
+      `:`<div class="es" style="padding:16px"><div class="big">🎰</div><div style="font-size:12px">Add picks above to build your parlay. Mix sports for cross-sport parlays.</div></div>`}
       <div id="parlayOut" style="margin-top:10px"></div>
     </div>`}
 
-    function addParlayLeg() {
-      const inp = document.getElementById('parlayPick');
-      const pick = inp?.value?.trim(); if (!pick) return;
-      S.parlay.push({ pick, sport: S.sport });
-      inp.value = ''; render();
-    }
+function addParlayLeg(){
+  const inp=document.getElementById('parlayPick');
+  const pick=inp?.value?.trim();if(!pick)return;
+  S.parlay.push({pick,sport:S.sport});
+  inp.value='';render();
+}
 
-    async function analyzeParlayAll() { await runParlayAnalysis('full'); }
-    async function analyzeParlayRisk() { await runParlayAnalysis('risk'); }
-    async function analyzeParlayAlt() { await runParlayAnalysis('alt'); }
+async function analyzeParlayAll(){await runParlayAnalysis('full');}
+async function analyzeParlayRisk(){await runParlayAnalysis('risk');}
+async function analyzeParlayAlt(){await runParlayAnalysis('alt');}
 
-    async function runParlayAnalysis(type) {
-      if (!S.parlay.length) return;
-      const out = document.getElementById('parlayOut');
-      if (out) out.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Analyzing parlay…</div>`;
-      const legs = S.parlay.map((p, i) => `Leg ${i + 1}: ${p.pick} (${SP.find(s => s.id === p.sport)?.name || p.sport})`).join('\n');
-      const prompts = {
-        full: `Analyze this ${S.parlay.length}-leg parlay:\n\n${legs}\n\nFor each leg: confidence %, key factor, and risk.\nOverall: combined confidence, best leg, weakest leg, and your verdict.\nEnd with a bold call: RIDE IT or FADE IT.`,
-        risk: `Risk assessment for this parlay:\n\n${legs}\n\nIdentify the weakest link, correlation risks (legs that depend on each other), and the single biggest threat to this ticket hitting. Rate overall risk: LOW / MEDIUM / HIGH / DANGER.`,
-        alt: `This parlay needs improvement:\n\n${legs}\n\nFor any leg below 50% confidence, suggest a stronger alternative pick in the same sport. Keep the strong legs, upgrade the weak ones. Show the improved parlay at the end.`
-      };
-      let result = '';
-      if (aiReady) {
-        try {
-          const r = await FMFO.streamAnalysis({ query: `FMFO Sports AI Analyst — Parlay Analysis. Entertainment only, not gambling advice.\n\n${prompts[type] || prompts.full}\n\n📌 COMMENTATOR TALKING POINT`, sport: S.sport, mode: 'Pre-Game Intel' }, (text) => { result = text; if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(text)}</div>` });
-          result = r.text;
-        } catch (e) { result = `Error: ${e.message}`; }
-      } else { result = `🎰 Parlay: ${S.parlay.length} legs\n⚠️ AI offline.\n— FMFO Sports`; }
-      S.output = result;
-      if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(result)}</div>
+async function runParlayAnalysis(type){
+  if(!S.parlay.length)return;
+  const out=document.getElementById('parlayOut');
+  if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Analyzing parlay…</div>`;
+  const legs=S.parlay.map((p,i)=>`Leg ${i+1}: ${p.pick} (${SP.find(s=>s.id===p.sport)?.name||p.sport})`).join('\n');
+  const prompts={
+    full:`Analyze this ${S.parlay.length}-leg parlay:\n\n${legs}\n\nFor each leg: confidence %, key factor, and risk.\nOverall: combined confidence, best leg, weakest leg, and your verdict.\nEnd with a bold call: RIDE IT or FADE IT.`,
+    risk:`Risk assessment for this parlay:\n\n${legs}\n\nIdentify the weakest link, correlation risks (legs that depend on each other), and the single biggest threat to this ticket hitting. Rate overall risk: LOW / MEDIUM / HIGH / DANGER.`,
+    alt:`This parlay needs improvement:\n\n${legs}\n\nFor any leg below 50% confidence, suggest a stronger alternative pick in the same sport. Keep the strong legs, upgrade the weak ones. Show the improved parlay at the end.`
+  };
+  let result='';
+  if(aiReady){
+    try{
+      const r=await FMFO.streamAnalysis({query:`FMFO Sports AI Analyst — Parlay Analysis. Entertainment only, not gambling advice.\n\n${prompts[type]||prompts.full}\n\n📌 COMMENTATOR TALKING POINT`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{result=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
+      result=r.text;
+    }catch(e){result=`Error: ${e.message}`;}
+  }else{result=`🎰 Parlay: ${S.parlay.length} legs\n⚠️ AI offline.\n— FMFO Sports`;}
+  S.output=result;
+  if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(result)}</div>
     <div style="display:flex;gap:6px;margin-top:8px">
       <button class="btn bp bsm" onclick="copyText(S.output)">📋 Copy</button>
       <button class="btn bs bsm" onclick="shareAsContent(S.output)">📝 Post</button>
       <button class="btn bs bsm" onclick="logParlayPrediction()">🔮 Log All Picks</button>
     </div>`;
-      S.history.push({ query: `Parlay: ${S.parlay.length} legs`, sport: 'multi', mode: 'Parlay Builder', time: new Date().toLocaleTimeString(), output: result });
-      renderSide();
-    }
+  S.history.push({query:`Parlay: ${S.parlay.length} legs`,sport:'multi',mode:'Parlay Builder',time:new Date().toLocaleTimeString(),output:result});
+  renderSide();
+}
 
-    function logParlayPrediction() {
-      S.parlay.forEach(p => {
-        const entry = { pick: p.pick, sport: p.sport, date: new Date().toLocaleDateString(), result: 'pending' };
-        S.predictions.push(entry);
-        dbSave('predictions', entry).then(r => { if (r) S.predictions[S.predictions.length - 1]._id = r.id });
-      });
-      updateMyLeaderboard(); render();
-    }
+function logParlayPrediction(){
+  S.parlay.forEach(p=>{
+    const entry={pick:p.pick,sport:p.sport,date:new Date().toLocaleDateString(),result:'pending'};
+    S.predictions.push(entry);
+    dbSave('predictions',entry).then(r=>{if(r)S.predictions[S.predictions.length-1]._id=r.id});
+  });
+  updateMyLeaderboard();render();
+}
 
-    // ============ TRENDING ============
-    function renderTrending() {
-      return `
+// ============ TRENDING ============
+function renderTrending(){
+  return `
     <div class="ch"><div class="ct" style="font-size:18px">🔥 Trending in Sports</div>
       <button class="btn bp bsm" onclick="generateTrending()">🔄 Refresh</button>
     </div>
     <div style="font-size:12px;color:var(--text-2);margin-bottom:8px">AI-generated hot takes and trending storylines across all sports.</div>
     <div id="trendOut">
-      ${S.trendCache ? `<div class="out" style="font-size:12px">${esc(S.trendCache)}</div>
+      ${S.trendCache?`<div class="out" style="font-size:12px">${esc(S.trendCache)}</div>
         <div style="display:flex;gap:6px;margin-top:8px">
           <button class="btn bp bsm" onclick="copyText(S.trendCache)">📋 Copy</button>
           <button class="btn bs bsm" onclick="shareAsContent(S.trendCache)">📝 Post</button>
-        </div>`: `
+        </div>`:`
         <div class="card"><div class="es"><div class="big">🔥</div><div style="font-size:12px">Hit Refresh to generate today's hottest sports storylines and hot takes.</div></div></div>
       `}
     </div>
@@ -2078,53 +1008,53 @@
       <div id="hotTakeOut"></div>
     </div>`}
 
-    async function generateTrending() {
-      const out = document.getElementById('trendOut');
-      if (out) out.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Scanning the sports world…</div>`;
-      const sportsList = SP.map(s => `${s.icon} ${s.name}`).join(', ');
-      if (aiReady) {
-        try {
-          const r = await FMFO.streamAnalysis({ query: `Trending topics engine. Generate today's TOP 10 hottest storylines across all major sports (${sportsList}). For each:\n\n1. A punchy headline\n2. One-sentence context\n3. Hot take angle for commentators\n\nRank by how much buzz they'd generate. Be bold, be current (${new Date().toLocaleDateString()}), and give commentators something to work with.\n\nEnd with: 🔥 HOTTEST TAKE OF THE DAY — your single most provocative but defensible sports opinion right now.`, sport: S.sport, mode: 'Pre-Game Intel' }, (text) => { S.trendCache = text; if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(text)}</div>` });
-          S.trendCache = r.text;
-        } catch (e) { S.trendCache = `Error: ${e.message}`; }
-      } else { S.trendCache = '⚠️ AI offline.\n— FMFO Sports'; }
-      if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(S.trendCache)}</div>
+async function generateTrending(){
+  const out=document.getElementById('trendOut');
+  if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Scanning the sports world…</div>`;
+  const sportsList=SP.map(s=>`${s.icon} ${s.name}`).join(', ');
+  if(aiReady){
+    try{
+      const r=await FMFO.streamAnalysis({query:`Trending topics engine. Generate today's TOP 10 hottest storylines across all major sports (${sportsList}). For each:\n\n1. A punchy headline\n2. One-sentence context\n3. Hot take angle for commentators\n\nRank by how much buzz they'd generate. Be bold, be current (${new Date().toLocaleDateString()}), and give commentators something to work with.\n\nEnd with: 🔥 HOTTEST TAKE OF THE DAY — your single most provocative but defensible sports opinion right now.`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{S.trendCache=text;if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
+      S.trendCache=r.text;
+    }catch(e){S.trendCache=`Error: ${e.message}`;}
+  }else{S.trendCache='⚠️ AI offline.\n— FMFO Sports';}
+  if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(S.trendCache)}</div>
     <div style="display:flex;gap:6px;margin-top:8px">
       <button class="btn bp bsm" onclick="copyText(S.trendCache)">📋 Copy</button>
       <button class="btn bs bsm" onclick="shareAsContent(S.trendCache)">📝 Post</button>
     </div>`;
-      S.history.push({ query: 'Trending Topics', sport: 'multi', mode: 'Trending', time: new Date().toLocaleTimeString(), output: S.trendCache });
-      renderSide();
-    }
+  S.history.push({query:'Trending Topics',sport:'multi',mode:'Trending',time:new Date().toLocaleTimeString(),output:S.trendCache});
+  renderSide();
+}
 
-    async function generateHotTake() {
-      const inp = document.getElementById('hotTakeQ');
-      const topic = inp?.value?.trim(); if (!topic) return;
-      const out = document.getElementById('hotTakeOut');
-      if (out) out.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Cooking up a take…</div>`;
-      if (aiReady) {
-        try {
-          const r = await FMFO.streamAnalysis({ query: `Hot take generator. Give me a bold, provocative but defensible hot take about: ${topic}\n\nFormat:\n🔥 THE TAKE: [one bold sentence]\n\nWHY IT'S RIGHT: [2-3 supporting points]\nWHY IT'S WRONG: [the strongest counterargument]\nCONFIDENCE: [%]\n\n📌 COMMENTATOR USE: How to bring this up on air without getting fired.`, sport: S.sport, mode: 'Pre-Game Intel' }, (text) => { if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(text)}</div>` });
-          S.output = r.text;
-          if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(r.text)}</div>
+async function generateHotTake(){
+  const inp=document.getElementById('hotTakeQ');
+  const topic=inp?.value?.trim();if(!topic)return;
+  const out=document.getElementById('hotTakeOut');
+  if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Cooking up a take…</div>`;
+  if(aiReady){
+    try{
+      const r=await FMFO.streamAnalysis({query:`Hot take generator. Give me a bold, provocative but defensible hot take about: ${topic}\n\nFormat:\n🔥 THE TAKE: [one bold sentence]\n\nWHY IT'S RIGHT: [2-3 supporting points]\nWHY IT'S WRONG: [the strongest counterargument]\nCONFIDENCE: [%]\n\n📌 COMMENTATOR USE: How to bring this up on air without getting fired.`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
+      S.output=r.text;
+      if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(r.text)}</div>
         <div style="display:flex;gap:6px;margin-top:8px">
           <button class="btn bp bsm" onclick="copyText(S.output)">📋</button>
           <button class="btn bs bsm" onclick="shareAsContent(S.output)">📝</button>
         </div>`;
-        } catch (e) { if (out) out.innerHTML = `<div style="color:var(--red);font-size:12px">${e.message}</div>`; }
-      }
-      S.history.push({ query: `Hot Take: ${topic}`, sport: 'multi', mode: 'Trending', time: new Date().toLocaleTimeString(), output: S.output });
-      renderSide();
-    }
+    }catch(e){if(out)out.innerHTML=`<div style="color:var(--red);font-size:12px">${e.message}</div>`;}
+  }
+  S.history.push({query:`Hot Take: ${topic}`,sport:'multi',mode:'Trending',time:new Date().toLocaleTimeString(),output:S.output});
+  renderSide();
+}
 
-    // ============ PREP SHEET ============
-    function renderPrep() {
-      const sp = SP.find(s => s.id === S.sport);
-      return `
+// ============ PREP SHEET ============
+function renderPrep(){
+  const sp=SP.find(s=>s.id===S.sport);
+  return `
     <div class="ct" style="font-size:18px">📋 Commentator Prep Sheet</div>
     <div style="font-size:12px;color:var(--text-2);margin-bottom:6px">Your pre-broadcast preparation hub. Generate a full prep package or build your own notes.</div>
     <div class="card">
-      <div class="tab-row">${SP.map(s => `<button class="chip ${S.sport === s.id ? 'on' : ''}" onclick="S.sport='${s.id}';render()">${s.icon}</button>`).join('')}</div>
+      <div class="tab-row">${SP.map(s=>`<button class="chip ${S.sport===s.id?'on':''}" onclick="S.sport='${s.id}';render()">${s.icon}</button>`).join('')}</div>
       <div class="ir">
         <input class="inp" id="prepGame" placeholder="Enter matchup — e.g. Chiefs vs Bills, Arsenal vs Liverpool…" onkeydown="if(event.key==='Enter')generatePrep()">
         <button class="btn bp" onclick="generatePrep()">📋 Generate Prep</button>
@@ -2137,50 +1067,48 @@
       </div>
       <textarea class="note-area" id="notesArea" placeholder="Your personal notes, talking points, research, reminders…&#10;&#10;This is your scratchpad for broadcast prep.">${S.prepNotes}</textarea>
     </div>
-    ${S.saved.filter(a => a.sport === S.sport).length ? `
+    ${S.saved.filter(a=>a.sport===S.sport).length?`
     <div class="card">
       <div class="ct" style="margin-bottom:8px">Your ${sp?.name} Analyses</div>
       <div style="display:flex;flex-direction:column;gap:4px">
-        ${S.saved.filter(a => a.sport === S.sport).slice(-5).reverse().map((a, i) => `
+        ${S.saved.filter(a=>a.sport===S.sport).slice(-5).reverse().map((a,i)=>`
           <div class="fi" onclick="loadSaved2(${S.saved.indexOf(a)})" style="padding:6px">
             <div style="flex:1;min-width:0"><div class="hq">${esc(a.query)}</div></div>
           </div>`).join('')}
       </div>
-    </div>`: ''}`
-    }
+    </div>`:''}`}
 
-    async function generatePrep() {
-      const inp = document.getElementById('prepGame');
-      const matchup = inp?.value?.trim(); if (!matchup) return;
-      const sp = SP.find(s => s.id === S.sport);
-      const out = document.getElementById('prepOut');
-      if (out) out.innerHTML = `<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Building prep sheet…</div>`;
-      if (aiReady) {
-        try {
-          const r = await FMFO.streamAnalysis({ query: `FMFO Sports AI — Commentator Prep Sheet Generator.\n\nGenerate a complete broadcast prep sheet for: ${matchup} (${sp.name})\n\nInclude these sections:\n\n📊 KEY STATS TO HAVE READY\n(5-7 stats a commentator should have at their fingertips)\n\n📖 STORYLINES\n(3-4 narrative angles to weave into commentary)\n\n🔑 MATCHUPS TO WATCH\n(2-3 specific player/unit matchups that will decide the game)\n\n🎤 TALKING POINTS\n(5 ready-to-use on-air observations — complete sentences a commentator can say verbatim)\n\n⚠️ WATCH FOR\n(2-3 in-game situations to call out if they happen)\n\n🔮 BOLD PREDICTION\n(one specific, brave prediction with reasoning)\n\nFormat each section clearly. This is a working document a commentator prints and brings to the booth.`, sport: S.sport, mode: 'Pre-Game Intel' }, (text) => { if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(text)}</div>` });
-          S.output = r.text;
-          if (out) out.innerHTML = `<div class="out" style="font-size:12px">${esc(r.text)}</div>
+async function generatePrep(){
+  const inp=document.getElementById('prepGame');
+  const matchup=inp?.value?.trim();if(!matchup)return;
+  const sp=SP.find(s=>s.id===S.sport);
+  const out=document.getElementById('prepOut');
+  if(out)out.innerHTML=`<div class="thk"><div class="dots"><span></span><span></span><span></span></div> Building prep sheet…</div>`;
+  if(aiReady){
+    try{
+      const r=await FMFO.streamAnalysis({query:`FMFO Sports AI — Commentator Prep Sheet Generator.\n\nGenerate a complete broadcast prep sheet for: ${matchup} (${sp.name})\n\nInclude these sections:\n\n📊 KEY STATS TO HAVE READY\n(5-7 stats a commentator should have at their fingertips)\n\n📖 STORYLINES\n(3-4 narrative angles to weave into commentary)\n\n🔑 MATCHUPS TO WATCH\n(2-3 specific player/unit matchups that will decide the game)\n\n🎤 TALKING POINTS\n(5 ready-to-use on-air observations — complete sentences a commentator can say verbatim)\n\n⚠️ WATCH FOR\n(2-3 in-game situations to call out if they happen)\n\n🔮 BOLD PREDICTION\n(one specific, brave prediction with reasoning)\n\nFormat each section clearly. This is a working document a commentator prints and brings to the booth.`,sport:S.sport,mode:'Pre-Game Intel'},(text)=>{if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(text)}</div>`});
+      S.output=r.text;
+      if(out)out.innerHTML=`<div class="out" style="font-size:12px">${esc(r.text)}</div>
         <div style="display:flex;gap:6px;margin-top:8px">
           <button class="btn bp bsm" onclick="copyText(S.output)">📋 Copy Full Sheet</button>
-          <button class="btn bs bsm" onclick="saveGameAnalysis('Prep: ${matchup.replace(/'/g, "\\'")}')">💾 Save</button>
+          <button class="btn bs bsm" onclick="saveGameAnalysis('Prep: ${matchup.replace(/'/g,"\\'")}')">💾 Save</button>
           <button class="btn bs bsm" onclick="shareAsContent(S.output)">📝 Post</button>
         </div>`;
-        } catch (e) { if (out) out.innerHTML = `<div style="color:var(--red);font-size:12px">${e.message}</div>`; }
-      } else { if (out) out.innerHTML = `<div class="out empty">AI offline — server offline — try again.</div>`; }
-      S.history.push({ query: `Prep: ${matchup}`, sport: S.sport, mode: 'Prep Sheet', time: new Date().toLocaleTimeString(), output: S.output });
-      renderSide();
-    }
+    }catch(e){if(out)out.innerHTML=`<div style="color:var(--red);font-size:12px">${e.message}</div>`;}
+  }else{if(out)out.innerHTML=`<div class="out empty">AI offline — server offline — try again.</div>`;}
+  S.history.push({query:`Prep: ${matchup}`,sport:S.sport,mode:'Prep Sheet',time:new Date().toLocaleTimeString(),output:S.output});
+  renderSide();
+}
 
-    function saveNotes() {
-      const area = document.getElementById('notesArea');
-      S.prepNotes = area?.value || '';
-      if (dbReady && db) { dbSave('notes', { sport: S.sport, notes: S.prepNotes, savedAt: new Date().toISOString() }); }
-      const b = event?.target; if (b) { b.textContent = '✓ Saved'; setTimeout(() => b.textContent = '💾 Save', 1200); }
-    }
+function saveNotes(){
+  const area=document.getElementById('notesArea');
+  S.prepNotes=area?.value||'';
+  if(dbReady&&db){dbSave('notes',{sport:S.sport,notes:S.prepNotes,savedAt:new Date().toISOString()});}
+  const b=event?.target;if(b){b.textContent='✓ Saved';setTimeout(()=>b.textContent='💾 Save',1200);}
+}
 
-    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') }
-    boot();
-  </script>
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+boot();
+</script>
 </body>
-
 </html>
